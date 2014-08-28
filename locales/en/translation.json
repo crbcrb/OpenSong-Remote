@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "admin": "Service control",
+    "control": "Slide control",
+    "alert": "Alert",
+    "setup": "Setup",
+    "remote": "Remote screen",
+    "search": "Search",
+    "home": "Home",
+    "refresh": "Refresh",
+    "tabService": "Service",
+    "tabSlide": "Slide",
+    "tabAlert": "Alert",
+    "headService": "Service control",
+    "headSlide": "Slide control",
+    "headAlert": "Alert",
+    "headSetup": "Settings",
+    "next": "next",
+    "then": "then"
+  },
+  "setup": {
+    "connect": "Connect",
+    "host": "OpenSong ip:",
+    "port": "OpenSong port:",
+    "ww": "OpenSong password:",
+    "barState": "Current state",
+    "barSlide": "Slide control",
+    "barRemote": "Remote screen",
+    "tonen": "show as:",
+    "textsize": "text size",
+    "dia1": "Text",
+    "dia2": "$t(setup.dia1) and $t(setup.dia3)",
+    "dia3": "Image",
+    "dia4": "placeholder",
+    "remote1": "$t(setup.dia1) w/b",
+    "remote2": "$t(setup.dia1) b/w",
+    "net1": "connecting to __host__ ..." ,
+    "net2": "connection o.k.",
+    "net3": "websocket error",
+    "net4": "no connection",
+    "net5": "browser does not support websockets",
+    "net6": "no running presentation",
+    "net7": "disconnected"
+  },
+  "state": {
+    "normal": "Normal",
+    "black": "Black",
+    "hide": "Hide",
+    "freeze": "Freeze",
+    "left": "Previous",
+    "right": "Next",
+    "up": "Previous",
+    "down": "Next"
+  },
+  "alert": {
+    "text": "Message",
+    "show": "Show",
+    "hide": "Hide"
+  }
+}

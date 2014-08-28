@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "admin": "Liturgie Beheer",
+    "control": "Dia regelaar",
+    "alert": "Waarschuwing",
+    "setup": "Instellingen",
+    "remote": "Remote screen",
+    "search": "Zoek",
+    "home": "Home",
+    "refresh": "Vernieuwen",
+    "tabService": "Liturgie",
+    "tabSlide": "Dia's",
+    "tabAlert": "Waarschuwing",
+    "headService": "Liturgie beheer",
+    "headSlide": "Dia regelaar",
+    "headAlert": "Waarschuwing",
+    "headSetup": "Instellingen",
+    "next": "volgende",
+    "then": "daarna"
+  },
+  "setup": {
+    "connect": "Maak Verbinding",
+    "host": "OpenSong ip:",
+    "port": "OpenSong port:",
+    "ww": "OpenSong wachtwoord:",
+    "barState": "Status",
+    "barSlide": "Dia regelaar",
+    "barRemote": "Remote screen",
+    "tonen": "tonen als:",
+    "textsize": "tekst grootte",
+    "dia1": "Tekst",
+    "dia2": "$t(setup.dia1) + $t(setup.dia3)",
+    "dia3": "Plaatje",
+    "dia4": "placeholder",
+    "remote1": "$t(setup.dia1) w/z",
+    "remote2": "$t(setup.dia1) z/w",
+    "net1": "verbinding met __host__ wordt gemaakt..." ,
+    "net2": "verbinding o.k.",
+    "net3": "websocket error",
+    "net4": "geen verbinding",
+    "net5": "browser does not support websockets",
+    "net6": "geen lopende presentatie",
+    "net7": "verbinding verbroken"
+  },
+  "state": {
+    "normal": "Normaal",
+    "black": "Zwart",
+    "hide": "Verborgen",
+    "freeze": "Vastzetten",
+    "left": "Vorige",
+    "right": "Volgende",
+    "up": "Vorige",
+    "down": "Volgende"
+  },
+  "alert": {
+    "text": "Bericht",
+    "show": "Tonen",
+    "hide": "Weghalen"
+  }
+}

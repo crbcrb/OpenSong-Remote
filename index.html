@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-# aangepast voor OpenSong, sep 2013 CRB
+# aangepast voor OpenSong, sep 2014 CRB
 # ontleend aan
 # OpenLP - Open Source Lyrics Projection                                      #
 # --------------------------------------------------------------------------- #
@@ -11,12 +11,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1" />
   <title>OpenSong Remote</title>
-  <link rel="stylesheet" href="files/jquery.mobile.css" />
-  <link rel="stylesheet" href="files/opensong.css" />
   <link rel="shortcut icon" type="image/x-icon" href="files/images/favicon.ico">
-  <script type="text/javascript" src="files/jquery.js"></script>
+  <link rel="stylesheet" href="files/jqm-opensong.min.css" />
+  <link rel="stylesheet" href="files/jquery.mobile.icons.min.css" />
+  <link rel="stylesheet" href="files/jquery.mobile.structure-1.4.3.min.css" />
+  <link rel="stylesheet" href="files/opensong.css" />
+  <script type="text/javascript" src="files/jquery-2.1.1.min.js"></script>
+  <!--<script type="text/javascript" src="files/jquery-migrate-1.2.1.js"></script>-->
   <script type="text/javascript" src="files/opensong.js"></script>
-  <script type="text/javascript" src="files/jquery.mobile.js"></script>
+  <script type="text/javascript" src="files/jquery.mobile-1.4.3.min.js"></script>
+  <script type="text/javascript" src="files/i18next-1.7.3.min.js"></script>
+  
   <script type="text/javascript">
   translationStrings = {
     "go_live": "Ga Live",
@@ -26,109 +31,163 @@
   }
   $(document).ready(function() {
     $.support.cors = true;
-    $.mobile.changePage("#setup");
+console.log("DOM is ready");
+    var userLang = navigator.language || navigator.userLanguage;
+    
+    i18n.init({lng: userLang,
+              fallbackLng: 'en',
+              useLocalStorage: false,
+              debug: true},
+              function(t) {
+                $("#set-submit").i18n();
+                $("#lblSetHost").text($.t('setup.host'));
+                $("#lblSetPort").text($.t('setup.port'));
+                $("#lblSetWw").text($.t('setup.ww'));
+                $("#barState").text($.t('setup.barState'));
+                $("#barSlide").text($.t('setup.barSlide'));
+                $("#barRemote").text($.t('setup.barRemote'));
+                $("#toon1").text($.t('setup.tonen'));
+                $("#toon2").text($.t('setup.tonen'));
+                $("#lblSize").text($.t('setup.textsize'));
+                $("#lblDia1").text($.t('setup.dia1'));
+                $("#lblDia2").text($.t('setup.dia2'));
+                $("#lblDia3").text($.t('setup.dia3'));
+                $("#lblRemote1").text($.t('setup.remote1'));
+                $("#lblRemote2").text($.t('setup.remote2'));
+                $("#lblRemote3").text($.t('setup.dia3'));
+                $(".status-show").text($.t('state.normal'));
+                $(".status-zwart").text($.t('state.black'));
+                $(".status-theme").text($.t('state.hide'));
+                $(".status-freeze").text($.t('state.freeze'));
+                $(".nav-home").text($.t('nav.home'));
+                $(".nav-refresh").text($.t('nav.refresh'));
+                $("#nav-admin").text($.t('nav.admin'));
+                $("#nav-control").text($.t('nav.control'));
+                $("#nav-alert").text($.t('nav.alert'));
+                $("#nav-setup").text($.t('nav.setup'));
+                $("#nav-remote").text($.t('nav.remote'));
+                $("#nav-search").text($.t('nav.search'));
+                $("#navHeadService").text($.t('nav.headService'));
+                $("#navHeadSlide").text($.t('nav.headSlide'));
+                $("#navHeadAlert").text($.t('nav.headAlert'));
+                $("#navHeadSetup").text($.t('nav.headSetup'));
+                
+                $(".tabService").text($.t('nav.tabService'));
+                $(".tabSlide").text($.t('nav.tabSlide'));
+                $(".tabAlert").text($.t('nav.tabAlert'));
+                $("#service-previous").text($.t('state.left'));
+                $("#service-next").text($.t('state.right'));
+                $("#controller-previous").text($.t('state.up'));
+                $("#controller-next").text($.t('state.down'));
+                $("#controller2-previous").text($.t('state.up'));
+                $("#controller2-next").text($.t('state.down'));
+                $("#lblAlertTxt").text($.t('alert.text'));
+                $("#alert-submit").text($.t('alert.show'));
+                $("#alert-cancel").text($.t('alert.hide'));
+    });
+    $( "body" ).pagecontainer( "change", "#setup");
   });
   function onDeviceReady() {
     // Register the event listener
     document.addEventListener("menubutton", onMenuKeyDown, false);
   }
   function onMenuKeyDown() {
-    $.mobile.changePage("#home");
+    $( "body" ).pagecontainer( "change", "#home");
   }
   </script>
 </head>
 <body>
 <div data-role="page" id="home">
-  <div data-role="header">
+  <div data-role="header" data-theme="b">
     <h1>OpenSong Remote</h1>
   </div>
-  <div data-role="content">
+  <div data-role="content" data-theme="c">
     <div data-role="controlgroup">
-      <a href="index.html#service-manager" data-role="button" data-icon="arrow-r" data-iconpos="right">Liturgie beheer</a>
-      <a href="index.html#slide-controller" data-role="button" data-icon="arrow-r" data-iconpos="right">Dia regelaar</a>
-      <a href="index.html#alert" data-role="button" data-icon="arrow-r" data-iconpos="right">Waarschuwing</a>
-      <a href="index.html#setup" data-role="button" data-icon="arrow-r" data-iconpos="right">Instellingen</a>
-      <a href="index.html#remote-screen" data-role="button" data-icon="arrow-r" data-iconpos="right">Remote screen</a>
-      <a href="index.html#search" data-role="button" data-icon="arrow-r" data-iconpos="right">Zoek</a>
+      <a href="index.html#service-manager" data-role="button" data-icon="arrow-r" data-iconpos="right" id="nav-admin">Service control</a>
+      <a href="index.html#slide-controller" data-role="button" data-icon="arrow-r" data-iconpos="right" id="nav-control">Slide control</a>
+      <a href="index.html#alert" data-role="button" data-icon="arrow-r" data-iconpos="right" id="nav-alert">Alert</a>
+      <a href="index.html#setup" data-role="button" data-icon="arrow-r" data-iconpos="right" id="nav-setup">Setup</a>
+      <a href="index.html#remote-screen" data-role="button" data-icon="arrow-r" data-iconpos="right" id="nav-remote">Remote screen</a>
+      <a href="index.html#search" data-role="button" data-icon="arrow-r" data-iconpos="right" id="nav-search">Zoek</a>
     </div>
   </div>
 </div>
 <div data-role="page" id="service-manager">
-  <div data-role="header" data-position="fixed" data-theme="a">
-    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left">Home</a>
-    <h1>Liturgie beheer</h1>
-    <a href="index.html#" id="service-refresh" data-role="button" data-icon="refresh">Vernieuwen</a>
+  <div data-role="header" data-position="fixed" data-theme="a" class="header1">
+    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left" class="nav-home">Home</a>
+    <h1 id="navHeadService">Service control</h1>
+    <a href="index.html#" id="service-refresh" data-role="button" data-icon="refresh" class="nav-refresh">Vernieuwen</a>
     <div data-role="navbar">
       <ul>
-        <li><a href="index.html#service-manager" data-theme="e">Liturgie</a></li>
-        <li><a href="index.html#slide-controller" data-theme="b">Dia's</a></li>
-        <li><a href="index.html#alert" data-theme="b">Waarschuwing</a></li>
+        <li><a href="index.html#service-manager" data-theme="e" class="tabService">Liturgie</a></li>
+        <li><a href="index.html#slide-controller" data-theme="b" class="tabSlide">Dia's</a></li>
+        <li><a href="index.html#alert" data-theme="b" class="tabAlert">Waarschuwing</a></li>
       </ul>
     </div>
   </div>
-  <div data-role="content">
+  <div data-role="content" data-theme="c">
     <ul data-role="listview" data-inset="true">
     </ul>
   </div>
   <div data-role="footer" data-theme="b" class="ui-bar" data-position="fixed">
     <div data-role="controlgroup" data-type="horizontal" style="float: left;">
-      <a href="index.html#" id="controller-blank" data-theme="b" data-role="button">Zwart</a>
-      <a href="index.html#" id="controller-theme" data-theme="b" data-role="button">Verborgen</a>
-      <a href="index.html#" id="controller-freeze" data-theme="b" data-role="button">Vastzetten</a>
-      <a href="index.html#" id="controller-show" data-theme="b" data-role="button">Normaal</a>
+      <a href="index.html#" id="controller-blank" class="status-zwart" data-theme="b" data-role="button" data-i18n="state.black">Zwart</a>
+      <a href="index.html#" id="controller-theme" class="status-theme" data-theme="b" data-role="button" data-i18n="state.hide">Verborgen</a>
+      <a href="index.html#" id="controller-freeze" class="status-freeze" data-theme="b" data-role="button" data-i18n="state.freeze">Vastzetten</a>
+      <a href="index.html#" id="controller-show" class="status-show" data-theme="b" data-role="button" data-i18n="state.normal">Normaal</a>
     </div>
-    <div data-role="controlgroup" data-type="horizontal" style="float: left;">
+    <div data-role="controlgroup" data-type="horizontal" style="float: right; margin-right: 35px;">
       <a href="index.html#" id="service-previous" data-role="button" data-icon="arrow-l">Vorige</a>
       <a href="index.html#" id="service-next" data-role="button" data-icon="arrow-r" data-iconpos="right">Volgende</a>
     </div>
   </div>
 </div>
 <div data-role="page" id="slide-controller">
-  <div data-role="header" data-position="fixed">
-    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left">Home</a>
-    <h2>Dia regelaar</h2>
-    <a href="index.html#" id="controller-refresh" data-role="button" data-icon="refresh">Vernieuwen</a>
+  <div data-role="header" data-position="fixed" data-theme="a" id="header2">
+    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left" class="nav-home">Home</a>
+    <h2 id="navHeadSlide">Slide control</h2>
+    <a href="index.html#" id="controller-refresh" data-role="button" data-icon="refresh" class="nav-refresh">Vernieuwen</a>
     <div data-role="navbar">
       <ul>
-        <li><a href="index.html#service-manager" data-theme="b">Liturgie</a></li>
-        <li><a href="index.html#slide-controller" data-theme="e">Dia's</a></li>
-        <li><a href="index.html#alert" data-theme="b">Waarschuwing</a></li>
+        <li><a href="index.html#service-manager" data-theme="b" class="tabService">Liturgie</a></li>
+        <li><a href="index.html#slide-controller" data-theme="e" class="tabSlide">Dia's</a></li>
+        <li><a href="index.html#alert" data-theme="b" class="tabAlert">Waarschuwing</a></li>
       </ul>
     </div>
   </div>
-  <div data-role="content">
+  <div data-role="content" data-theme="c">
     <h3 id="controller-titel" data-inset="true">titel</h3> 
     <ul data-role="listview" data-inset="true">
     </ul>
   </div>
   <div data-role="footer" data-theme="b" class="ui-bar" data-position="fixed">
     <div data-role="controlgroup" data-type="horizontal" style="float: left;">
-      <a href="index.html#" id="controller-blank" data-theme="b" data-role="button">Zwart</a>
-      <a href="index.html#" id="controller-theme" data-theme="b" data-role="button">Verborgen</a>
-      <a href="index.html#" id="controller-freeze" data-theme="b" data-role="button">Vastzetten</a>
-      <a href="index.html#" id="controller-show" data-theme="b" data-role="button">Normaal</a>
+      <a href="index.html#" id="controller-blank" class="status-zwart" data-theme="b" data-role="button" data-i18n="state.black">Zwart</a>
+      <a href="index.html#" id="controller-theme" class="status-theme" data-theme="b" data-role="button" data-i18n="state.hide">Verborgen</a>
+      <a href="index.html#" id="controller-freeze" class="status-freeze" data-theme="b" data-role="button" data-i18n="state.freeze">Vastzetten</a>
+      <a href="index.html#" id="controller-show" class="status-show" data-theme="b" data-role="button" data-i18n="state.normal">Normaal</a>
     </div>
-    <div data-role="controlgroup" data-type="horizontal" style="float: left;">
+    <div data-role="controlgroup" data-type="horizontal" style="float: right; margin-right: 35px;">
       <a href="index.html#" id="controller-previous" data-role="button" data-icon="arrow-u">Vorige</a>
       <a href="index.html#" id="controller-next" data-role="button" data-icon="arrow-d" data-iconpos="right">Volgende</a>
     </div>
   </div>
 </div>
 <div data-role="page" id="alert">
-  <div data-role="header">
-    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left">Home</a>
-    <h1>Waarschuwing</h1>
+  <div data-role="header" data-theme="a" id="header3">
+    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left" class="nav-home">Home</a>
+    <h1 id="navHeadAlert">Alert</h1>
     <div data-role="navbar">
       <ul>
-        <li><a href="index.html#service-manager" data-theme="b">Liturgie</a></li>
-        <li><a href="index.html#slide-controller" data-theme="b">Dia's</a></li>
-        <li><a href="index.html#alert" data-theme="e">Waarschuwing</a></li>
+        <li><a href="index.html#service-manager" data-theme="b" class="tabService">Liturgie</a></li>
+        <li><a href="index.html#slide-controller" data-theme="b" class="tabSlide">Dia's</a></li>
+        <li><a href="index.html#alert" data-theme="e" class="tabAlert">Waarschuwing</a></li>
       </ul>
     </div>
   </div>
-  <div data-role="content">
+  <div data-role="content" data-theme="c">
     <div data-role="fieldcontain" data-inset="true">
-      <label for="alert-text">Bericht</label>
+      <label for="alert-text" id="lblAlertText">Bericht</label>
       <input type="search" name="alert-text" id="alert-text" value="" />
     </div>
     <div data-role="controlgroup" data-type="horizontal">
@@ -139,21 +198,21 @@
   </div>
     <div data-role="footer" data-theme="b" class="ui-bar" data-position="fixed">
     <div data-role="controlgroup" data-type="horizontal" style="float: left;">
-      <a href="index.html#" id="controller-blank" data-theme="b" data-role="button">Zwart</a>
-      <a href="index.html#" id="controller-theme" data-theme="b" data-role="button">Verborgen</a>
-      <a href="index.html#" id="controller-freeze" data-theme="b" data-role="button">Vastzetten</a>
-      <a href="index.html#" id="controller-show" data-theme="b" data-role="button">Normaal</a>
+      <a href="index.html#" id="controller-blank" class="status-zwart" data-theme="b" data-role="button" data-i18n="state.black">Zwart</a>
+      <a href="index.html#" id="controller-theme" class="status-theme" data-theme="b" data-role="button" data-i18n="state.hide">Verborgen</a>
+      <a href="index.html#" id="controller-freeze" class="status-freeze" data-theme="b" data-role="button" data-i18n="state.freeze">Vastzetten</a>
+      <a href="index.html#" id="controller-show" class="status-show" data-theme="b" data-role="button" data-i18n="state.normal">Normaal</a>
     </div>
-    <div data-role="controlgroup" data-type="horizontal" style="float: left;">
-      <a href="index.html#" id="controller-previous" data-role="button" data-icon="arrow-u">Vorige</a>
-      <a href="index.html#" id="controller-next" data-role="button" data-icon="arrow-d" data-iconpos="right">Volgende</a>
+    <div data-role="controlgroup" data-type="horizontal" style="float: right; margin-right: 35px;">
+      <a href="index.html#" id="controller2-previous" data-role="button" data-icon="arrow-u">Vorige</a>
+      <a href="index.html#" id="controller2-next" data-role="button" data-icon="arrow-d" data-iconpos="right">Volgende</a>
     </div>
   </div>
 
 </div>
-<div data-role="page" id="remote-screen">
-  <div data-role="header">
-    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left">Home</a>
+<div data-role="page" id="remote-screen" data-theme="a">
+  <div data-role="header" data-theme="a">
+    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left" class="nav-home">Home</a>
     <h1 id="current-screen-titel">Remote screen</h1>
   </div>
   <div data-role="content">
@@ -162,77 +221,79 @@
   </div>
 </div>
 <div data-role="page" id="setup">
-  <div data-role="header">
-    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left">Home</a>
-    <h1>Instellingen</h1>
+  <div data-role="header" data-theme="a">
+    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left" class="nav-home">Home</a>
+    <h1 id="navHeadSetup">Setup</h1>
     <div data-role="navbar">
       <ul>
-        <li><a href="index.html#service-manager" data-theme="b">Liturgie</a></li>
-        <li><a href="index.html#slide-controller" data-theme="b">Dia's</a></li>
-        <li><a href="index.html#alert" data-theme="b">Waarschuwing</a></li>
+        <li><a href="index.html#service-manager" data-theme="b" class="tabService">Liturgie</a></li>
+        <li><a href="index.html#slide-controller" data-theme="b" class="tabSlide">Dia's</a></li>
+        <li><a href="index.html#alert" data-theme="b" class="tabAlert">Waarschuwing</a></li>
       </ul>
     </div>
   </div>
-  <div data-role="content">
+  <div data-role="content" data-theme="c">
     <div data-role="fieldcontain">
-      <label for="set-host">OpenSong ip:</label>
+      <label for="set-host" id="lblSetHost">OpenSong ip:</label>
       <input type="url" name="set-host" id="set-host" value="" />
     </div>
     <div data-role="fieldcontain">
-      <label for="set-port">OpenSong port:</label>
+      <label for="set-port" id="lblsetPort">OpenSong port:</label>
       <input type="number" name="set-port" id="set-port" value="" />
     </div>
     <div data-role="fieldcontain">
-      <label for="set-pwd">OpenSong password:</label>
+      <label for="set-pwd" id="lblSetWw">OpenSong password:</label>
       <input type="password" name="set-pwd" id="set-pwd" value="" />
     </div>
-    <a href="index.html#" id="set-submit" data-role="button">Maak verbinding</a>
-    <h3 class="ui-bar ui-bar-a">Status</h3>
+    <a href="index.html#" id="set-submit" data-role="button" data-i18n="setup.connect">Maak verbinding</a>
+    <h3 class="ui-bar ui-bar-a" id="barState">Status</h3>
     <div class="ui-body">
     <div id="host-status"></div>
     <div id="host-status2"></div>
     </div>
-    <h3 class="ui-bar ui-bar-a">Dia regelaar</h3>
+    <h3 class="ui-bar ui-bar-a" id="barSlide">Dia regelaar</h3>
     <div class="ui-body">
     <div data-role="fieldcontain" data-type="horizontal">
 	<fieldset data-role="controlgroup" data-type="horizontal">
-        <legend>tonen als:</legend>
-        <input name="regelaarsoort-" id="regelaarsoort-a" value="on" checked="checked" type="radio">
-        <label for="regelaarsoort-a">Tekst</label>
-        <input name="regelaarsoort-" id="regelaarsoort-b" value="off" type="radio">
-        <label for="regelaarsoort-b">Tekst + plaatje</label>
-        <input name="regelaarsoort-" id="regelaarsoort-c" value="other" type="radio">
-        <label for="regelaarsoort-c">Plaatje</label>
+        <legend id="toon1">tonen als:</legend>
+        <input name="regelaarsoort-" id="regelaarsoort-a" value="a" checked="checked" type="radio">
+        <label for="regelaarsoort-a" id="lblDia1">Tekst</label>
+        <input name="regelaarsoort-" id="regelaarsoort-b" value="b" type="radio">
+        <label for="regelaarsoort-b" id="lblDia2">Tekst + plaatje</label>
+        <input name="regelaarsoort-" id="regelaarsoort-c" value="c" type="radio">
+        <label for="regelaarsoort-c" id="lblDia3">Plaatje</label>
 	</fieldset>
     </div>
     </div>
-    <h3 class="ui-bar ui-bar-a">Remote screen</h3>
+    <h3 class="ui-bar ui-bar-a" id="barRemote">Remote screen</h3>
     <div class="ui-body">
 	<div data-role="fieldcontain" data-type="horizontal">
         <fieldset data-role="controlgroup" data-type="horizontal">
-	<legend>tonen als:</legend>
+	<legend id="toon2">tonen als:</legend>
         <input name="screensoort-" id="screensoort-a" value="on" checked="checked" type="radio">
-        <label for="screensoort-a">Tekst</label>
-        <input name="screensoort-" id="screensoort-b" value="off" type="radio">
-        <label for="screensoort-b">Plaatjes</label>
+        <label for="screensoort-a" id="lblRemote1">Tekst w/z</label>
+        <input name="screensoort-" id="screensoort-b" value="on" type="radio">
+        <label for="screensoort-b" id="lblRemote2">Tekst z/w</label>
+        <input name="screensoort-" id="screensoort-c" value="off" type="radio">
+        <label for="screensoort-c" id="lblRemote3">Plaatje</label>
         </fieldset>
 	</div>
 	<div data-role="fieldcontain" data-type="horizontal">
-	<label for="screen-size">tekst grootte:</label>
+	<label for="screen-size" id="lblSize">tekst grootte:</label>
 	<input type="range" name="screen-size" id="screen-size" value="40" min="10" max="200" data-highlight="true"/>
 	</div>
    </div>
 </div>
 <div data-role="page" id="search">
   <div data-role="header" data-position="fixed">
-    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left">Home</a>
+    <a href="index.html#home" data-role="button" data-icon="home" data-iconpos="left" class="nav-home">Home</a>
     <h1>Zoek lied</h1>
     <div data-role="navbar">
       <ul>
         <li><a href="index.html#service-manager" data-theme="b">Liturgie</a></li>
         <li><a href="index.html#slide-controller" data-theme="b">Dia's</a></li>
         <li><a href="index.html#alert" data-theme="b">Waarschuwing</a></li>
-        <li><a href="index.html#search" data-theme="e">Zoek</a></li>
+        <li><a href="index.html#search" data-theme="c">Zoek</a></li>
       </ul>
     </div>
   </div>

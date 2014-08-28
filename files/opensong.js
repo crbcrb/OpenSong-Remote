@@ -1,29 +1,17 @@
 /******************************************************************************
  * OpenSong - Open Source Lyrics Projection                                    *
  * --------------------------------------------------------------------------- *
- aangepast voor OpenSong, mei 2014 CRB                                     
+ aangepast voor OpenSong, aug 2014 CRB                                     
  ontleend aan
  
  * OpenLP - Open Source Lyrics Projection    * Copyright (c) 2008-2013 Raoul Snyman                                        *
- * --------------------------------------------------------------------------- *
- * This program is free software; you can redistribute it and/or modify it     *
- * under the terms of the GNU General Public License as published by the Free  *
- * Software Foundation; version 2 of the License.                              *
- *                                                                             *
- * This program is distributed in the hope that it will be useful, but WITHOUT *
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       *
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    *
- * more details.                                                               *
- *                                                                             *
- * You should have received a copy of the GNU General Public License along     *
- * with this program; if not, write to the Free Software Foundation, Inc., 59  *
- * Temple Place, Suite 330, Boston, MA 02111-1307 USA                          *
+
  ******************************************************************************/
 
 $.support.cors = true;
 
 var OpenSongHost;
-var lastMode = '';
+var lastMode = '';    // N = normal, B = black, F = freeze, H = hide, X = other, S = sleep
 var lastSectie = -1;
 var lastSlide = -1;
 var currentSectie = -1;
@@ -82,7 +70,7 @@ window.OpenSong = {
       type: "GET",
       url: OpenSongHost + "presentation/slide/list",
       dataType: "xml",
-//      async : true,
+//      async : false,
       success: function (xmlPlaylist) {
           Playlist = xmlPlaylist;
           // voeg sectienummer toe aan playlist
@@ -144,22 +132,19 @@ window.OpenSong = {
     });   // einde ajax
   },
   showService : function () {
-    var ip;
-    var ih;
+    var ip = 0;
+    var ih = 0;
     if (currentSectie == 0) {
       n = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('sectie');
     } else {
       n = currentSectie;
     }
-
-    $("#service-manager div[data-role=content] ul[data-role=listview] li").attr("data-theme", "c").removeClass("ui-btn-up-e").addClass("ui-btn-up-c");
-    $("#service-manager div[data-role=content] ul[data-role=listview] li a").each(function () {
+    $("#service-manager div[data-role=content] ul[data-role=listview] .ui-btn-e").removeClass("ui-btn-e").addClass("ui-btn ui-btn-c");
+    $("#service-manager div[data-role=content] ul[data-role=listview] li").each(function () {
       var item = $(this);
-      while (item[0].tagName != "LI") {
-                item = item.parent();
-      }
-      if (item.attr("sectie") == n) {
-        item.attr("data-theme", "e").removeClass("ui-btn-up-c").addClass("ui-btn-up-e");
+      var dezeSectie = item.attr("sectie");  
+      if (dezeSectie == n ) {
+        item.find('a').removeClass("ui-btn-c").addClass("ui-btn ui-btn-e");
         ip = item.offset().top;
         ih = item.height();
         return false;
@@ -167,11 +152,10 @@ window.OpenSong = {
     });
     try {
       $("#service-manager div[data-role=content] ul[data-role=listview]").listview("refresh");
-      var wpos = $("#service-manager div[data-role=content] ul[data-role=listview] li").attr("data-theme", "c").offset().top;
-      var wh = $(window).height();
+      var wh = $(window).height() - 100;
       var ws = $(window).scrollTop();
-      if (((ip + ih - ws) > wh ) || (ip < (ws +wpos) )) {
-        $.mobile.silentScroll(ip-wpos);
+      if (((ip + ih - ws) > wh ) || ((ip-ih-ih) < ws)) {
+        $.mobile.silentScroll(ip-wh/2);
       }
     }
     catch(e){
@@ -183,7 +167,6 @@ window.OpenSong = {
       return;
     }
     if (loadControllerBusy == true) {
-//      console.log("loadController busy");
       return false;
     }
     lastSectie = currentSectie;
@@ -196,7 +179,6 @@ window.OpenSong = {
       $("#controller-titel").text("(slide: " + sn + "; item: " + currentSectie + ")");
       var li = $("<li data-icon=\"false\">").append(
         $("<a href=\"#\">").attr("slide",sn).html(''));
-      li.attr("data-theme", "e");
       li.children("a").click(OpenSong.setSlide);
       ul.append(li);
       sn++;
@@ -209,20 +191,15 @@ window.OpenSong = {
         // maak een lege li lijst
         var s = $(this).attr('identifier');
         vers = "0";
-        tekst = "placeholder";
+        tekst = i18n.t("setup.dia4");
         var li = $("<li data-icon=\"false\">").append(
                 $("<a href=\"#\">").attr("slide", parseInt(s, 10)).attr('vers',vers).html(tekst));
-        if (s == currentSlide) {
-                li.attr("data-theme", "e");
-        } 
         li.children("a").click(OpenSong.setSlide);
         ul.append(li);
-//        console.log("loadController: GET presentation/slide/nnn");
         lastUrl = OpenSongHost + "presentation/slide/" + s;
         $.ajax({
           type: "GET",
           url: OpenSongHost + "presentation/slide/" + s,
-//          async: false,
           dataType: "xml",
           success: function (xmlSong) {
             if ($(xmlSong).find('response').find('slide').attr('name')) {
@@ -231,7 +208,6 @@ window.OpenSong = {
               naam = '';
             };
             slideId = $(xmlSong).find('response').attr('identifier');
-//            console.log("loadController: ontvangen, slideId: ",slideId);
             tekst = $(xmlSong).find('response').find('slide').find('title').text();
             verzen = $(xmlSong).find('response').find('slide').find('presentation').text();
             if (tekst != '') {
@@ -255,8 +231,8 @@ window.OpenSong = {
               var tekst = $(this).find('body').text();
               if (soort == 'image') {
                 var bestand = $(xmlSong).find('response').find('slide').find('filename').text();
-                tekst = tekst + 'plaatje: ' + bestand.replace(/^.*[\\\/]/, '');
-                if (($('#regelaarsoort-a').attr('checked'))) {
+                tekst = tekst + i18n.t("setup.dia3") + ': ' + bestand.replace(/^.*[\\\/]/, '');
+                if ($('#regelaarsoort-a').is(":checked")) {
                   tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + slideId
                     + '/preview/width:160/height:100" align="right">' + tekst;
                 }
@@ -274,20 +250,15 @@ window.OpenSong = {
                   var vers = $(this).attr('id');
                   verst = vers.replace(/V/gi, '');
                   verst = verst.replace(/C/gi, 'refr');
-                  //presentid = $(this).attr('PresentationIndex');
-                  //if (presentid != lastpresentid) {
                     tekst = '<sup>' + verst + '. </sup>' + tekst;
-                  //  lastpresentid = presentid;
-                  //}
                 }
               }
-              if (($('#regelaarsoort-b').attr('checked'))) {
+              if ($('#regelaarsoort-b').is(":checked")) {
                 // voeg thumb toe
-                tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + slideId
-                    + '/preview/width:160/height:100" align="right">'
-                    + tekst;   
+                tekst = tekst + '<p class="ui-li-aside"><img src="' + OpenSongHost + 'presentation/slide/' + slideId
+                    + '/preview/width:160/height:100"></p>';   
               }
-              if (($('#regelaarsoort-c').attr('checked'))) {
+              if ($('#regelaarsoort-c').is(":checked")) {
                 // toon alleen plaatje
                 tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + slideId
                     + '/preview/width:480/height:300">';   
@@ -301,6 +272,8 @@ window.OpenSong = {
                 }
               });
             })
+            // ajax call is klaar, nu showController aanroepen
+            OpenSong.showController();
           } // ajax succes function
         })   // ajax
               s++;
@@ -317,7 +290,7 @@ window.OpenSong = {
         titel = '(' + naam + ') ' + titel;
       }
       var li = $("<li data-icon=\"false\">").append(
-        $("<a href=\"#\">").attr("slide",s).html('volgende: ' + titel));
+        $("<a href=\"#\">").attr("slide",s).html(i18n.t("nav.next") + ': ' + titel));
       li.children("a").click(OpenSong.setSlide);
       ul.append(li);
       var i = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('sectie');
@@ -331,7 +304,7 @@ window.OpenSong = {
           }
           var s = $(this).attr('identifier');
           var li = $("<li data-icon=\"false\">").append(
-            $("<a href=\"#\">").attr("slide",s).html('daarna: ' + titel));
+            $("<a href=\"#\">").attr("slide",s).html(i18n.t("nav.then") + ': ' + titel));
           li.children("a").click(OpenSong.setSlide);
           ul.append(li);
           return false;
@@ -339,35 +312,41 @@ window.OpenSong = {
       })
     }
     ul.listview().listview("refresh");
+    // showcontroller kan nu nog niet lopen omdat alle ajax calls nog niet terug zijn
     OpenSong.showController();
     loadControllerBusy = false;
   },
   showController : function () {
     var ip;
     var ih;
-          $("#slide-controller div[data-role=content] ul[data-role=listview] li").attr("data-theme", "c").removeClass("ui-btn-up-e").addClass("ui-btn-up-c");
-          $("#slide-controller div[data-role=content] ul[data-role=listview] li a").each(function () {
+          $("#slide-controller div[data-role=content] ul[data-role=listview]  .ui-btn-e").removeClass("ui-btn-e").addClass("ui-btn");
+          $("#slide-controller div[data-role=content] ul[data-role=listview] a").each(function () {
             var item = $(this);
-            if (item.attr("slide") == currentSlide) {
-              while (item[0].tagName != "LI") {
-                item = item.parent();
-              }
-              item.attr("data-theme", "e").removeClass("ui-btn-up-c").addClass("ui-btn-up-e");
+            if (item.attr("slide") == currentSlide.toString()) {
+              item.removeClass("ui-btn-c").addClass("ui-btn-e");
+              item = item.parent();
               ip = item.offset().top;
               ih = item.height();
               return false;
             }
           });
           $("#slide-controller div[data-role=content] ul[data-role=listview]").listview("refresh");
-          var wpos = $("#slide-controller div[data-role=content] ul[data-role=listview] li").attr("data-theme", "c").offset().top;
-          var wh = $(window).height();
+          var wh = $(window).height() - 100;
           var ws = $(window).scrollTop();
-          if (((ip + ih - ws) > wh ) || (ip < (ws +wpos) )) {
-             $.mobile.silentScroll(ip-wpos);
+          if (((ip + ih - ws) > wh ) || ((ip-ih-ih) < ws)) {
+             $.mobile.silentScroll(ip-wh/2);
           }
   },
   showRemoteScreen : function () {
-    if ((lastMode == 'N') || ($('#screensoort-b').attr('checked'))) {
+    if (($('#screensoort-a').is(":checked")) && (lastMode != 'B')) {
+      // zwarte letters op wit scherm
+      $("#remote-screen").removeClass("ui-page-theme-a").addClass("ui-page-theme-c")
+    } else {
+      // witte letters op zwart scherm of plaatje op zwart scherm
+      $("#remote-screen").removeClass("ui-page-theme-c").addClass("ui-page-theme-a")
+    }
+
+    if ((lastMode == 'N') || ($('#screensoort-c').is(":checked"))) {
       var sn = currentSlide;
       var tsize = $("#screen-size").val();
       lastUrl = OpenSongHost + "presentation/slide/" + sn;
@@ -396,10 +375,11 @@ window.OpenSong = {
             $(xmlSong).find('response').find('slide').find('slides').find('slide').each(function() {
               var tekst = $(this).find('body').text();
               
-              if ((soort == 'image') || ($('#screensoort-b').attr('checked'))) {
-//                tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + sn + '/preview/width:640/height:400/quality:70">';   
-                tekst = '<img src="' + OpenSongHost
-                        + 'presentation/slide/current/image/' + Math.random() + '">';   
+              if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
+                //var ww = $(window).width() -25;
+                //var wh = ww * 9 / 16;
+                //tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + sn + '/preview/width:' + ww + '/height:' + wh + '/quality:70">';   
+                tekst = '<img src="' + OpenSongHost + 'presentation/slide/current/image/' + Math.random() + '">';   
               }
               
               if (soort == 'external') {
@@ -435,7 +415,6 @@ window.OpenSong = {
     }
   },
   doeAktie: function(soort,opdracht) {
-//    console.log("doeAktie- soort: ",soort,"; opdracht: ",opdracht);
     lastUrl = OpenSongHost + opdracht;
     if (localStorage["OpenSongPwd"] != '' ) {
       $.ajax({
@@ -470,7 +449,7 @@ window.OpenSong = {
     var slide = OpenSong.getElement(event);
     var slideno = slide.attr("slide");
     OpenSong.doeAktie("text","presentation/slide/" + slideno);
-    $.mobile.changePage("#slide-controller");
+    $( "body" ).pagecontainer( "change", "#slide-controller");
   },
   setSlide: function (event) {
     event.preventDefault();
@@ -479,19 +458,17 @@ window.OpenSong = {
     OpenSong.doeAktie("text","presentation/slide/" + slideno);
   },
   updateStatus: function (data) {
-//    console.log("updateStatus start");
     if (data == 'OK') { return };
-      if (updateStatusBusy == true) {
-//        console.log("updateStatus busy");
+    if (updateStatusBusy == true) {
         return false;
       }
       updateStatusBusy = true;
       parser=new DOMParser();
       xml=parser.parseFromString(data,"text/xml");
       if ($(xml).find('response').find('presentation').attr('running') == "1") {
-        $("#host-status").html('verbinding o.k.');
+        $("#host-status").html(i18n.t("setup.net2"));
 //        if ($("#setup").is(":visible")) {
-//          $.mobile.changePage("#service-manager");
+//    $( "body" ).pagecontainer( "change", "#service-manager");
 //        }
         if ($(xml).find('response').find('presentation').find('slide').attr('itemnumber')) {
           currentSlide = $(xml).find('response').find('presentation').find('slide').attr('itemnumber');
@@ -504,7 +481,11 @@ window.OpenSong = {
         var currentMode = $(xml).find('response').find('presentation').find('screen').attr('mode');
       } else {
         // geen lopende presentatie
-        $("#host-status").html('<strong>geen lopende presentatie</strong> (verbinding o.k.)');
+        if ((typeof sok != 'undefined') && (sok.readyState == 1)) {
+          $("#host-status").html('<strong>' + i18n.t("setup.net6") + '</strong> (' + i18n.t("setup.net2") + ')');
+        } else {
+          $("#host-status").html('<strong>' + i18n.t("setup.net6") + '</strong> (' + i18n.t("setup.net7") + ')');
+        }
         currentMode = "X";
         playlist = '';
         lastStatus = '';
@@ -516,43 +497,31 @@ window.OpenSong = {
         loadServiceBusy = false;
         loadControllerBusy = false;
         updateStatusBusy = false;
-        $.mobile.changePage("#setup");
+        $( "body" ).pagecontainer( "change", "#setup");
       } // else if running == 1
-      
-      if (currentMode != lastMode) {
-              switch (lastMode) {
-                  case 'N' :
-                            $("a[id=controller-show]").attr("data-theme", "b").removeClass("ui-btn-up-c ui-btn-hover-c").addClass("ui-btn-up-b");
-                            break;;
-                  case 'B' :
-                            $("a[id=controller-blank]").attr("data-theme", "b").removeClass("ui-btn-up-e ui-btn-hover-e").addClass("ui-btn-up-b");
-                            break;;
-                  case 'F' :
-                            $("a[id=controller-freeze]").attr("data-theme", "b").removeClass("ui-btn-up-e ui-btn-hover-e").addClass("ui-btn-up-b");
-                            break;;
-                  case 'H' :
-                            $("a[id=controller-theme]").attr("data-theme", "b").removeClass("ui-btn-up-e ui-btn-hover-e").addClass("ui-btn-up-b");
-                            break;;
-              }
-              switch (currentMode) {
-                  case 'N' :
-                            $("a[id=controller-show]").attr("data-theme", "c").removeClass("ui-btn-up-b ui-btn-hover-b").addClass("ui-btn-up-c");
-                            break;;
-                  case 'B' :
-                            $("a[id=controller-blank]").attr("data-theme", "e").removeClass("ui-btn-up-b ui-btn-hover-b").addClass("ui-btn-up-e");
-                            break;;
-                  case 'F' :
-                            $("a[id=controller-freeze]").attr("data-theme", "e").removeClass("ui-btn-up-b ui-btn-hover-b").addClass("ui-btn-up-e");
-                            break;;
-                  case 'H' :
-                            $("a[id=controller-theme]").attr("data-theme", "e").removeClass("ui-btn-up-b ui-btn-hover-b").addClass("ui-btn-up-e");
-                            break;;
-              }
+        var modeChange = 0;
+        if (currentMode != lastMode) { modeChange = 1; }
         lastMode = currentMode;
-        if ($("#remote-screen").is(":visible")) {
-            OpenSong.showRemoteScreen();
+
+        // knoppen altijd zetten
+        $(".status-show").removeClass("ui-btn-c ui-btn-c").addClass("ui-btn-b");
+        $(".status-zwart, .status-freeze, .status-theme").removeClass("ui-btn-c ui-btn-e").addClass("ui-btn-b");
+        // afjankelijk van status juiste knop aan zetten
+        switch (currentMode) {
+          case 'N' :
+            $(".status-show").removeClass("ui-btn-b").addClass("ui-btn-c");
+            break;;
+          case 'B' :
+            $(".status-zwart").removeClass("ui-btn-b").addClass("ui-btn-e");
+            break;;
+          case 'F' :
+            $(".status-freeze").removeClass("ui-btn-b").addClass("ui-btn-e");
+            break;;
+          case 'H' :
+            $(".status-theme").removeClass("ui-btn-b").addClass("ui-btn-e");
+            break;;
         }
-      }; // if current mode != lastmode
+//      }; // if current mode != lastmode
       if (currentMode != "X") {
         if (lastSlide == -1) {
             OpenSong.loadService();   
@@ -572,13 +541,12 @@ window.OpenSong = {
           }
         }
         if ($("#remote-screen").is(":visible")) {
-          if ((lastSlide != currentSlide) && (currentSlide > 0)) {
+          if ( (modeChange > 0) || ((lastSlide != currentSlide) && (currentSlide > 0))) {
             OpenSong.showRemoteScreen(currentSlide);
           }
         }
       } // if currentMode != "X"
       lastSlide = currentSlide;
-//      console.log("updateStatus klaar");
       updateStatusBusy = false;
   },
   nextItem: function (event) {
@@ -614,7 +582,7 @@ window.OpenSong = {
     OpenSong.doeAktie("text","presentation/screen/normal","");
   },
   setHost: function (event) {
-    event.preventDefault();
+    typeof event !== 'undefined' ? event.preventDefault() : false;
     if ((typeof sok != 'undefined') && (sok.readyState == 1)) {
       // connectie is open, eerst sluiten
       sok.close();
@@ -625,29 +593,30 @@ window.OpenSong = {
     localStorage["OpenSongPort"] = $("#set-port").val();
     localStorage["OpenSongPwd"] = $.trim($("#set-pwd").val());
     $("#host-status2").html('');
-    $("#host-status").html('verbinding wordt gemaakt...');
+    $("#host-status").html(i18n.t("setup.net3",{host: OpenSongHost}));
     if ("WebSocket" in window) {
       var sok = new WebSocket(OpenSongWs);
       sok.onopen = function() {
         // Web Socket is connected, send data using send()
-        $("#host-status").html('verbinding o.k.');
+        $("#host-status").html(i18n.t("setup.net2"));
         sok.send('/ws/subscribe/presentation');
-        $.mobile.changePage("#service-manager");
+          $( "body" ).pagecontainer( "change", "#service-manager");
+
       };
       sok.onmessage = function (evt) { 
         OpenSong.updateStatus(evt.data);
       };
       sok.onerror = function() { 
         // websocket is closed.
-        $("#host-status").html('<strong>websocket error</strong>');
+        $("#host-status").html('<strong>' +  i18n.t("setup.net3") + '</strong>');
       };
       sok.onclose = function() { 
         // websocket is closed.
-        $("#host-status").html('<strong>geen verbinding</strong>');
+        $("#host-status").html('<strong>' +  i18n.t("setup.net4") + '</strong>');
       };
     } else {
       // The browser doesn't support WebSocket
-        $("#host-status").html('<strong>browser does not support websockets</strong>');
+        $("#host-status").html('<strong>' +  i18n.t("setup.net5") + '</strong>');
     } // if websocket
 //    if (sok.readyState == 1 ) {
       OpenSong.Herladen();
@@ -678,15 +647,13 @@ window.OpenSong = {
     updateStatusBusy = false;
 
     if (localStorage["OpenSongHost"] === null) {
-       $.mobile.changePage("#setup");
+      $( "body" ).pagecontainer( "change", "#setup"); 
     } else {
       OpenSong.getStatus();
 //      OpenSong.loadService();
-      if ($("#service-manager").is(":visible")) {
-       OpenSong.showService();
-      } else {
-        $.mobile.changePage("#service-manager");
-      }
+      if ($("#service-manager").is(":visible")) { OpenSong.showService(); }
+      if ($("#slide-controller").is(":visible")) { OpenSong.showController(); }
+      if ($("#remote-screen").is(":visible")) { OpenSong.showRemoteScreen(); }
     }
   },
   showAlert: function (event) {
@@ -705,6 +672,7 @@ window.OpenSong = {
     if (event) {
       event.preventDefault();
     }
+    clearTimeout(timer1);
     lastUrl = OpenSongHost + "presentation/status";
     $.ajax({
       type: "GET",
@@ -730,7 +698,7 @@ window.OpenSong = {
         var ul = $("#search > div[data-role=content] > ul[data-role=listview]");
         ul.html("");
         if (data.results.items.length == 0) {
-          var li = $("<li data-icon=\"false\">").text(translationStrings["no_results"]);
+          var li = $("<li data-icon=\"false\">").text('');
           ul.append(li);
         }
         else {
@@ -783,7 +751,7 @@ window.OpenSong = {
       {"data": text},
       function () {
         //$("#options").dialog("close");
-        $.mobile.changePage("#service-manager");
+        $( "body" ).pagecontainer( "change", "#service-manager");
       }
     );
   },
@@ -797,34 +765,37 @@ $(document).on("mobileinit", function(){
   $.mobile.allowCrossDomainPages = true;
   $.mobile.defaultDialogTransition = "none";
   $.mobile.defaultPageTransition = "none";
-  
+
 });
+
 // Service Manager
-$("#service-manager").live("pagebeforeshow", OpenSong.showService);
-$("#service-refresh").live("click", OpenSong.Herladen);
-$("#service-next").live("click", OpenSong.nextItem);
-$("#service-previous").live("click", OpenSong.previousItem);
+$(document).on("pagebeforeshow", "#service-manager", OpenSong.showService);
+$(document).on("click", "#service-refresh", OpenSong.Herladen);
+$(document).on("click", "#service-next", OpenSong.nextItem);
+$(document).on("click", "#service-previous", OpenSong.previousItem);
 // Slide Controller
-$("#slide-controller").live("pagebeforeshow", OpenSong.loadController);
-$("#controller-refresh").live("click", OpenSong.Herladen);
-$("#controller-next").live("click", OpenSong.nextSlide);
-$("#controller-previous").live("click", OpenSong.previousSlide);
+$(document).on("pagebeforeshow", "#slide-controller", OpenSong.loadController);
+$(document).on("click", "#controller-refresh", OpenSong.Herladen);
+$(document).on("click", "#controller-next", OpenSong.nextSlide);
+$(document).on("click", "#controller-previous", OpenSong.previousSlide);
+$(document).on("click", "#controller2-next", OpenSong.nextSlide);
+$(document).on("click", "#controller2-previous", OpenSong.previousSlide);
 // Remote screen
-$("#remote-screen").live("pagebeforeshow", OpenSong.loadRemoteScreen);
+$(document).on("pagebeforeshow", "#remote-screen", OpenSong.loadRemoteScreen);
 
 // onderstaande zet alle knoppen met deze id goed
-$("#controller-blank").live("click", OpenSong.blankDisplay);
-$("#controller-theme").live("click", OpenSong.themeDisplay);
-$("#controller-freeze").live("click", OpenSong.freezeDisplay);
-$("#controller-show").live("click", OpenSong.showDisplay);
+$(document).on("click", "#controller-blank", OpenSong.blankDisplay);
+$(document).on("click", "#controller-theme", OpenSong.themeDisplay);
+$(document).on("click", "#controller-freeze", OpenSong.freezeDisplay);
+$(document).on("click", "#controller-show", OpenSong.showDisplay);
 // Instellingen
-$("#setup").live("pagebeforeshow", OpenSong.showHost);
-$("#set-submit").live("click", OpenSong.setHost);
+$(document).on("pagebeforeshow", "#setup", OpenSong.showHost);
+$(document).on("click", "#set-submit", OpenSong.setHost);
 // onderstaande werkt niet...
 //$("#screen-size").on('slidestop',OpenSong.setTekstSize(event,ui));
 // Alerts
-$("#alert-submit").live("click", OpenSong.showAlert);
-$("#alert-cancel").live("click", OpenSong.cancelAlert);
+$(document).on("click", "#alert-submit", OpenSong.showAlert);
+$(document).on("click", "#alert-cancel", OpenSong.cancelAlert);
 // Search
 //$("#search-submit").live("click", OpenSong.search);
 /*$("#search-text").live("keypress", function(event) {
@@ -850,14 +821,13 @@ $.ajaxSetup({
     }
   },
   error : function (xhr,txtStatus,ErrorThrown) {
-//    console.log("Ajax error: ",xhr);
     if (xhr.status == 404) {
       $("#host-status2").html('<strong>Ajax: </strong> ' + txtStatus + " " + xhr.status
           + " " + ErrorThrown + " (" + lastUrl + ")");
     } else {
       if (xhr.status != 0) {
         $("#host-status2").html('<strong>Ajax: </strong> ' + txtStatus + " " + xhr.status + " " + ErrorThrown);
-        $.mobile.changePage("#setup");
+        $( "body" ).pagecontainer( "change", "#setup");
 //    $("#host-status").html('<strong>verbinding verbroken</strong>');
       }
     }
