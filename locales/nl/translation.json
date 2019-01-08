@@ -5,16 +5,22 @@
     "alert": "Waarschuwing",
     "setup": "Instellingen",
     "remote": "Remote screen",
-    "search": "Zoek",
-    "home": "Home",
+    "searchP": "Zoek presentatie",
+    "searchL": "Lied toevoegen",
+    "close": "sluiten",
+    "info": "info",
     "refresh": "Vernieuwen",
     "tabService": "Liturgie",
     "tabSlide": "Dia's",
     "tabAlert": "Waarschuwing",
+    "tabSearchP": "$t(nav.searchP)",
+    "tabSearchL": "$t(nav.searchL)",
     "headService": "Liturgie beheer",
     "headSlide": "Dia regelaar",
     "headAlert": "Waarschuwing",
     "headSetup": "Instellingen",
+    "headSearchP": "$t(nav.searchP)",
+    "headSearchL": "$t(nav.searchL)",
     "next": "volgende",
     "then": "daarna"
   },
@@ -34,13 +40,19 @@
     "dia4": "placeholder",
     "remote1": "$t(setup.dia1) w/z",
     "remote2": "$t(setup.dia1) z/w",
+    "mode1": "Enkel scherm",
+    "mode2": "Dubbel scherm",
     "net1": "verbinding met __host__ wordt gemaakt..." ,
     "net2": "verbinding o.k.",
     "net3": "websocket error",
     "net4": "geen verbinding",
     "net5": "browser does not support websockets",
     "net6": "geen lopende presentatie",
-    "net7": "verbinding verbroken"
+    "bridge": "brug",
+    "tag": "tussenspel",
+    "chorus": "refr.",
+    "choose": "maak een keuze..."
+    
   },
   "state": {
     "normal": "Normaal",
@@ -50,11 +62,28 @@
     "left": "Vorige",
     "right": "Volgende",
     "up": "Vorige",
-    "down": "Volgende"
+    "down": "Volgende",
+    "startshow": "Nu tonen",
+    "modus": "Modus",
+    "stopshow": "Lopende presentatie stoppen",
+    "running": "Lopende presentatie stoppen?",
+    "yes": "ja",
+    "no": "nee"
   },
   "alert": {
-    "text": "Bericht",
+    "message": "Bericht",
     "show": "Tonen",
-    "hide": "Weghalen"
+    "hide": "Weghalen",
+    "alert": "waarschuwing",
+    "noalert": "geen waarschuwing"
+  },
+  "search": {
+    "sets": "Projecten",
+    "songMap": "Kies map",
+    "wait": "Even geduld, lijst wordt opgehaald",
+    "insert": "Voeg lied toe"
+  },
+  "song": {
+    "setverse": "Presentatie volgorde"
   }
 }

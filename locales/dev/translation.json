@@ -6,7 +6,7 @@
     "setup": "Setup",
     "remote": "Remote screen",
     "searchP": "Search presentation",
-    "searchL": "Insert song",
+    "searchL": "Search song",
     "close": "close",
     "info": "info",
     "refresh": "Refresh",
@@ -51,7 +51,6 @@
     "net7": "disconnected",
     "bridge": "bridge",
     "chorus": "chorus",
-    "tag": "tag",
     "choose": "choose one..."
   },
   "state": {
@@ -64,7 +63,6 @@
     "up": "Previous",
     "down": "Next",
     "startshow": "Show",
-    "modus": "Mode",
     "stopshow": "Stop currently running presentation",
     "running": "Stop currently running presentation?",
     "yes": "yes",
@@ -80,10 +78,6 @@
   "search": {
     "sets": "Sets",
     "songMap": "Choose dir",
-    "wait": "Please wait...",
-    "insert": "Insert song"
-  },
-  "song": {
-    "setverse": "Presentation order"
+    "wait": "Please wait..."
   }
 }

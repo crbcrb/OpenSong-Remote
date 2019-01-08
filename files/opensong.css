@@ -14,18 +14,56 @@
   white-space: normal;
   text-overflow: initial;
 }
-
+#remote-screen.ui-page-theme-a, #remote-screen.ui-overlay-a {
+  background-color: #000;
+}
 .screen-kop {
   font-size: 5vmin;
 }
 .screen-tekst {
   font-family: calibri, sans-serif;
   font-size: 10vmin;
-  font-weight: bold;
+  font-weight: normal;
 }
 .screen-tekst img {
-  height: 90%;
-  max-height: 90%;
-  width: auto;
-  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+}
+.rboven {
+  position:absolute;
+  top:0;
+  right:0;
+  z-index:99;
+}
+.geenpad {
+  padding: 0;
+}
+@media screen and (orientation:portrait) {
+    /* Portrait styles */
+  .screen-tekst img {
+    max-width: 100%;
+  }
+}
+@media screen and (orientation:landscape) {
+    /* Landscape styles */
+  .screen-tekst img {
+    max-height: 99%;
+  }
+}
+@media screen and (min-width: 560px) {
+  .breed {
+    display: block;  
+  }
+  .smal {
+    display: none;  
+  }
+}
+@media screen and (max-width: 559px) {
+  .breed {
+    display: none;  
+  }
+  .smal {
+    display: block;  
+  }
 }

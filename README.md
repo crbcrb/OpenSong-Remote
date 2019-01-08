@@ -1,4 +1,4 @@
-OpenSong-Remote
+OpenSong Remote
 ===============
 
-remote control for OpenSong
+remote control for OpenSong (www.opensong.org)
