@@ -68,14 +68,14 @@ window.OpenSong = {
   },
   loadService: function (event) {
     // service is de hele liturgie
-    //console.groupCollapsed('start loadService');
+    console.groupCollapsed('start loadService');
     //console.trace();
     if (event) {
       event.preventDefault();
     }
     if (loadServiceBusy == true) {
-      //console.log('exit want loadService is al bezig');
-      //console.groupEnd();
+       console.log('exit want loadService is al bezig');
+       console.groupEnd();
        return;
     }
     loadServiceBusy = true;
@@ -146,7 +146,7 @@ window.OpenSong = {
           }
         }  // einde succes function  
     });   // einde ajax
-    //console.groupEnd();
+    console.groupEnd();
   },
   showService : function () {
     //console.groupCollapsed('start showService');
@@ -520,18 +520,19 @@ window.OpenSong = {
     OpenSong.doeAktie("text","presentation/slide/" + slideno);
   },
   updateStatus: function (data) {
-    //console.groupCollapsed('start updateStatus');
+    console.group('start updateStatus');
     //console.trace();
     if (data == 'OK') {
-      //console.log('OK ontvangen');
-      //console.groupEnd();
+      console.log('OK ontvangen');
+      console.groupEnd();
       return;
     };
     if (updateStatusBusy == true) {
-      //console.log('is nog bezig');
-      //console.groupEnd();
+      console.log('is nog bezig');
+      console.groupEnd();
       return;
     }
+    console.log('ontvangen status: ' + data);
     updateStatusBusy = true;
     parser=new DOMParser();
     xml=parser.parseFromString(data,"text/xml");
@@ -546,6 +547,14 @@ window.OpenSong = {
         currentSectie = 0;
       }
       var currentMode = $(xml).find('response').find('presentation').find('screen').attr('mode');
+      // check nu off slidename van status klopt met slidename in de playlist
+      statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
+      statusTitel = $(xml).find('response').find('presentation').find('slide').find('title').text();
+      playItemName = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('name');
+      console.log('statusNaam: ' + statusNaam + '; playItemName: ' + playItemName);
+      if ((statusNaam !=='') && (statusNaam !== playItemName)) {
+        lastSlide = -1;  // force reload        
+      }
     } else {
       // geen lopende presentatie
       $("#host-status").html('<strong>' + i18n.t("setup.net6") + '</strong> (' + i18n.t("setup.net2") + ')');
@@ -588,7 +597,7 @@ window.OpenSong = {
     if (currentMode != lastMode) {
       modeChange = 1;
     }
-    //console.log('current mode: %s, lastMode: %s',currentMode,lastMode);
+    console.log('current mode: %s, lastMode: %s',currentMode,lastMode);
     lastMode = currentMode;
     // knoppen altijd zetten
     $(".status-show").removeClass("ui-btn-c").addClass("ui-btn-b");
@@ -645,7 +654,7 @@ window.OpenSong = {
     } // if currentMode != "X"
     lastSlide = currentSlide;
     updateStatusBusy = false;
-    //console.groupEnd();
+    console.groupEnd();
   },
   nextItem: function (event) {
     event.preventDefault();
@@ -899,11 +908,9 @@ window.OpenSong = {
       //OpenSong.doeSearch();
     };
     if (lastMode != "X") {
-      $("#song-stop1").removeClass("ui-btn-b").addClass("ui-btn-e");
-      $("#song-show").removeClass("ui-btn-e").addClass("ui-btn-b");
+      $("#song-insert").removeClass("ui-btn-b").addClass("ui-btn-e");
     } else {
-      $("#song-stop1").removeClass("ui-btn-e").addClass("ui-btn-b");
-      $("#song-show").removeClass("ui-btn-b").addClass("ui-btn-e");
+      $("#song-insert").removeClass("ui-btn-e").addClass("ui-btn-b");
     }
     var ip = 0;
     var ih = 0;
@@ -994,9 +1001,10 @@ window.OpenSong = {
                   //+ '/after:0'
                   + '/order:' + encodeURI(verses)
                   ,'');
-    $('body').pagecontainer( "change", "#service-manager");
-    OpenSong.Herladen;
-    $('body').pagecontainer( "change", "#slide-controller");
+    // forceer herladen
+    lastMode == '';
+    $("#popupSong").popup("close");
+    OpenSong.getStatus();
   },
   presentShow: function (event) {
     if (event) {event.preventDefault(); }
