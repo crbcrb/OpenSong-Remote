@@ -149,7 +149,7 @@ window.OpenSong = {
     console.groupEnd();
   },
   showService : function () {
-    //console.groupCollapsed('start showService');
+    console.groupCollapsed('start showService');
     //console.trace();
     var ip = 0;
     var ih = 0;
@@ -158,6 +158,7 @@ window.OpenSong = {
     } else {
       n = currentSectie;
     }
+    console.log('currentSectie: ',n);
     $("#service-manager div[role=main] ul .ui-btn-e").removeClass("ui-btn-e").addClass("ui-btn ui-btn-c");
     $("#service-manager div[role=main] ul li").each(function () {
       var item = $(this);
@@ -166,11 +167,11 @@ window.OpenSong = {
         item.find('a').removeClass("ui-btn-c").addClass("ui-btn ui-btn-e");
         ip = item.offset().top;
         ih = item.height();
-        //console.groupEnd();
+        console.groupEnd();
         return false;
       }
     });
-    ////console.log('scrollen naar: ',ip);
+    console.log('scrollen naar: ',ip);
     try {
       $("#service-manager div[role=main] ul").listview("refresh");
       var wh = $(window).height() - 100;
@@ -182,21 +183,21 @@ window.OpenSong = {
     catch(e){
 //      alert('An error has occurred: '+e.message)
     }
-    //console.groupEnd();
+    console.groupEnd();
   },
   loadController: function () {
-    //console.groupCollapsed('start loadController');
+    console.groupCollapsed('start loadController');
     //console.trace();
     var n = $("#slides li").length;
     //console.log('aantal items: ',n);
     if ((currentSectie == lastSectie) && (lastSectie != -1) && (n>1)){
-      //console.log('exit want nog in zelfde sectie')
-      //console.groupEnd();
+      console.log('exit want nog in zelfde sectie')
+      console.groupEnd();
       return;
     }
     if (loadControllerBusy == true) {
-      //console.log('exit want loadController is bezig')
-      //console.groupEnd();
+      console.log('exit want loadController is bezig')
+      console.groupEnd();
       return;
     }
     lastSectie = currentSectie;
@@ -229,7 +230,7 @@ window.OpenSong = {
         ul.append(li);
         lastUrl = OpenSongHost + "presentation/slide/" + s;
         ajaxBusy++;
-        ////console.log('ajax call %d afgevuurd',ajaxBusy);
+        //console.log('ajax call %d afgevuurd',ajaxBusy);
         $.ajax({
           type: "GET",
           url: OpenSongHost + "presentation/slide/" + s,
@@ -313,9 +314,9 @@ window.OpenSong = {
             // ajax call is klaar, maar we kunnen pas showController doen
             //      als alle ajax calls klaar zijn
             ajaxBusy--;
-            ////console.log('nog %d uitstaande ajax calls',ajaxBusy);
+            //console.log('nog %d uitstaande ajax calls',ajaxBusy);
             if (ajaxBusy <= 0) {
-              ////console.log('alle ajax calls zijn klaar');
+              console.log('alle ajax calls zijn klaar');
               OpenSong.showController();
             }
           } // ajax succes function
@@ -359,10 +360,10 @@ window.OpenSong = {
     // showcontroller kan nu nog niet lopen omdat alle ajax calls nog niet terug zijn
 //    OpenSong.showController();
     loadControllerBusy = false;
-    //console.groupEnd();
+    console.groupEnd();
   },
   showController : function () {
-    //console.groupCollapsed('start showController');
+    console.groupCollapsed('start showController');
     //console.trace();
     var ip  = 0;
     var ih = 0;
@@ -384,7 +385,7 @@ window.OpenSong = {
     if (((ip + ih - ws) > wh ) || ((ip-ih-ih) < ws)) {
       $.mobile.silentScroll(ip-wh/2);
     }
-    //console.groupEnd();
+    console.groupEnd();
   },
   showRemoteScreen : function () {
     if (($('#screensoort-a').is(":checked")) && (lastMode != 'B')) {
@@ -549,10 +550,13 @@ window.OpenSong = {
       var currentMode = $(xml).find('response').find('presentation').find('screen').attr('mode');
       // check nu off slidename van status klopt met slidename in de playlist
       statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
-      statusTitel = $(xml).find('response').find('presentation').find('slide').find('title').text();
       playItemName = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('name');
-      console.log('statusNaam: ' + statusNaam + '; playItemName: ' + playItemName);
+      if ((lastSlide != -1) && (lastSlide == currentSlide) && (currentMode == lastMode)) {
+        console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
+        lastSlide = -1;  // force reload        
+      }
       if ((statusNaam !=='') && (statusNaam !== playItemName)) {
+        console.log('reloaden? - statusNaam: ' + statusNaam + '; playItemName: ' + playItemName);
         lastSlide = -1;  // force reload        
       }
     } else {
@@ -597,7 +601,7 @@ window.OpenSong = {
     if (currentMode != lastMode) {
       modeChange = 1;
     }
-    console.log('current mode: %s, lastMode: %s',currentMode,lastMode);
+    //console.log('current mode: %s, lastMode: %s',currentMode,lastMode);
     lastMode = currentMode;
     // knoppen altijd zetten
     $(".status-show").removeClass("ui-btn-c").addClass("ui-btn-b");
@@ -1004,7 +1008,9 @@ window.OpenSong = {
     // forceer herladen
     lastMode == '';
     $("#popupSong").popup("close");
-    OpenSong.getStatus();
+      setTimeout(function() {
+        $('body').pagecontainer( "change", "#service-manager");
+        },1000);
   },
   presentShow: function (event) {
     if (event) {event.preventDefault(); }
@@ -1031,12 +1037,6 @@ window.OpenSong = {
       $("#popupP").popup("close");
       setTimeout(function() {
         OpenSong.presentShow();
-        },3000);
-    }
-    if ($("#popupSong").parent().hasClass("ui-popup-active")){
-      $("#popupSong").popup("close");
-      setTimeout(function() {
-        OpenSong.beamSearch();
         },3000);
     }
   },

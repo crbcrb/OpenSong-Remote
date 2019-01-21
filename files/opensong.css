@@ -52,6 +52,7 @@
   }
 }
 @media screen and (min-width: 560px) {
+  /* toont mode buttons naast elkaar*/
   .breed {
     display: block;  
   }
@@ -60,6 +61,7 @@
   }
 }
 @media screen and (max-width: 559px) {
+  /* toont mode buttons in popup*/
   .breed {
     display: none;  
   }
