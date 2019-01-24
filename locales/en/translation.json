@@ -47,7 +47,7 @@
     "net3": "websocket error",
     "net4": "no connection",
     "net5": "browser does not support websockets",
-    "net6": "no running presentation",
+    "net6": "no presentation active",
     "net7": "disconnected",
     "bridge": "bridge",
     "chorus": "chorus",
@@ -84,6 +84,7 @@
     "insert": "Insert song"
   },
   "song": {
-    "setverse": "Presentation order"
+    "setverse": "Presentation order",
+    "lyrics": "lyrics preview"
   }
 }

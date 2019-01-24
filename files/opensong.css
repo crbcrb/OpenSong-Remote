@@ -39,6 +39,16 @@
 .geenpad {
   padding: 0;
 }
+#songLyrics {
+  height: auto;
+  max-height: 30vh;
+  overflow-y: auto;
+  overflow-x; hidden;
+  white-space: pre;
+}
+#songselect {
+  font-style: italic;
+}
 @media screen and (orientation:portrait) {
     /* Portrait styles */
   .screen-tekst img {

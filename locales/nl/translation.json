@@ -84,6 +84,7 @@
     "insert": "Voeg lied toe"
   },
   "song": {
-    "setverse": "Presentatie volgorde"
+    "setverse": "Presentatie volgorde",
+    "lyrics": "lied voorbeeldweergave"
   }
 }

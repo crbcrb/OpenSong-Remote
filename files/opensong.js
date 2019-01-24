@@ -588,7 +588,8 @@ window.OpenSong = {
       // zet alle knoppen uit
       $(".status-show").removeClass("ui-btn-c ui-btn-c").addClass("ui-btn-b");
       // maak schermen leeg
-      $("#service-manager > div[role=main] > ul").html("");
+      $("#service-manager > div[role=main] > ul").html('<li data-icon="false">'+i18n.t("setup.net6")+"</li>");
+      $("#service-manager > div[role=main] > ul").listview().listview("refresh");
       $("#slide-controller > div[role=main] > ul").html("");
       // vermeld status
       if ($("#slide-controller").is(":visible")) {
@@ -757,10 +758,12 @@ window.OpenSong = {
       sok.onerror = function() { 
         // websocket is closed.
         $("#host-status").html('<strong>' +  i18n.t("setup.net3") + '</strong>');
+        $( "body" ).pagecontainer( "change", "#setup");
       };
       sok.onclose = function() { 
         // websocket is closed.
         $("#host-status").html('<strong>' +  i18n.t("setup.net4") + '</strong>');
+        $( "body" ).pagecontainer( "change", "#setup");
       };
     } else {
       // The browser doesn't support WebSocket
@@ -826,7 +829,7 @@ window.OpenSong = {
   showAlert: function (event) {
     event.preventDefault();
     var pwd = $("#set-pwd").val();
-    var alert = ' ' + $("#alert-text").val() + ' ';
+    var alert = $("#alert-text").val();
     OpenSong.doeAktie("text","presentation/screen/alert/message:" + encodeURI(alert));
     $("#alert-status").html('<br>' + i18n.t("alert.alert") + ': ' + alert);
   },
@@ -898,24 +901,26 @@ window.OpenSong = {
   loadSearch: function() {
     //console.groupCollapsed('start loadSearch');
     lastUrl = OpenSongHost + "song/folders/";
-    $.ajax({
-      type: "GET",
-      url: OpenSongHost + "song/folders/",
-      dataType: "xml",
-      success: function (xmlFolders) {
-        Folders = xmlFolders;
-          $(Folders).find('response').find('folders').children().each(function() {
-             if ($(this).attr('name')) {
+    if ($('#search-folders').find('option').length <= 0) {
+      $.ajax({
+        type: "GET",
+        url: OpenSongHost + "song/folders/",
+        dataType: "xml",
+        success: function (xmlFolders) {
+          Folders = xmlFolders;
+            $(Folders).find('response').find('folders').children().each(function() {
+              if ($(this).attr('name')) {
                 var name = $(this).attr('name');
                 if (name.indexOf('( ') < 0) {
                   $('#search-folders').append('<option value="' + name + '">' + name + '</option>');
                 }
-             }
-          });
-        $('#search-folders').prop("selectedIndex",0).selectmenu('refresh');
-        OpenSong.doeSearch();
-      }
-    });
+              }
+           });
+          $('#search-folders').prop("selectedIndex",0).selectmenu('refresh');
+          OpenSong.doeSearch();
+        }
+      });
+    }
     //console.groupEnd();
   },
   showSearch: function() {
@@ -924,11 +929,7 @@ window.OpenSong = {
       OpenSong.loadSearch();
       //OpenSong.doeSearch();
     };
-    if (lastMode != "X") {
-      $("#song-insert").removeClass("ui-btn-b").addClass("ui-btn-e");
-    } else {
-      $("#song-insert").removeClass("ui-btn-e").addClass("ui-btn-b");
-    }
+    $("#song-insert").removeClass("ui-btn-e").addClass("ui-btn-b");
     var ip = 0;
     var ih = 0;
     $("#search-results a").each(function () {
@@ -952,8 +953,10 @@ window.OpenSong = {
   doeSearch: function (event) {
     //event.preventDefault();
     //console.groupCollapsed('start doeSearch');
+    $("#song-insert").removeClass("ui-btn-e").addClass("ui-btn-b");
     $('#song-status').show();
     $('#search-results').empty();
+    $('input[data-type="search"]').val("");
     map = $('#search-folders option:selected').text();
     //console.log('map: ' + map);
     lastUrl = OpenSongHost + "song/list/folder:" + encodeURI(map);
@@ -995,15 +998,45 @@ window.OpenSong = {
     });
     //console.groupEnd();
     $("#search-results").listview("refresh");
+    if (lastMode != "X") {
+      $("#song-insert").removeClass("ui-btn-b").addClass("ui-btn-e");
+    } else {
+      $("#song-insert").removeClass("ui-btn-e").addClass("ui-btn-b");
+    }
+
     //console.groupEnd();
   },
   insertSong: function (event) {
     if (event) {event.preventDefault(); }
-      map = $('#search-folders option:selected').text();
-      song = $("#search-results .ui-btn-e").text();
-//      console.log('nu invoegen: ' + song + ' uit ' + map);
-      $("#songselect").text(song + ' (' + map + ')');
-      $("#popupSong").popup("open");
+    map = $('#search-folders option:selected').text();
+    song = $("#search-results .ui-btn-e").text();
+    console.log('songdetails ophalen van ' + song + ' uit ' + map);
+    $("#songselect").text(map + '/' + song);
+    $("#songselect2").text();
+    $("#popupSong").popup("open");
+    // retrieve songtekst
+    lastUrl = OpenSongHost + "song/detail/" + encodeURI(song) + "/folder:" + encodeURI(map);
+    $.ajax({
+      type: "GET",
+      url: lastUrl,
+      dataType: "xml",
+      success: function (xmlSong) {
+          dezeSong = $(xmlSong).find('response').find('song');
+          titel = $(dezeSong).find('title').text();
+          if (titel != song ) {
+            $("#songselect").text(map + '/ ' + song);
+          } else {
+            $("#songselect").text(map);
+          }
+          $("#songselect2").text(titel);
+          volgorde = $(dezeSong).find('presentation').text();
+          $("#set-verse").val(volgorde);
+          songtekst = $(dezeSong).find('lyrics').text();
+          $("#songLyrics").html(songtekst);
+          $("#songLyrics").scrollTop(0);
+        }
+    });
+
   },
   insertSongYes: function (event) {
     if (event) {event.preventDefault(); }
@@ -1138,7 +1171,6 @@ $.ajaxSetup({
     } else {
       if (xhr.status != 0) {
         $("#host-status2").html('<strong>Ajax: </strong> ' + txtStatus + " " + xhr.status + " " + ErrorThrown);
-        //$( "body" ).pagecontainer( "change", "#setup");
       }
     }
   },

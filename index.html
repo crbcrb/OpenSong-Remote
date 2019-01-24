@@ -96,6 +96,7 @@ console.log("DOM is ready");
                 $("#controller-modeS").text($.t('state.modus'));
                 $("#song-map").text($.t('search.songMap') + ':');
                 $("#song-insert").text($.t('search.insert') + ':');
+                $("#song-tekst").text($.t('song.lyrics'));
                 $("#lblSetVerse").text($.t('song.setverse'));
                 
                 $("#sets-status").html('<strong>' + $.t('search.wait') + '</strong>');
@@ -380,7 +381,12 @@ console.log("DOM is ready");
     <div id="song-status">-Even geduld, lijst wordt opgehaald...</div>
     <div data-role="popup" data-dismissible="false" id="popupSong" class="ui-content" data-theme="e">
       <div role="main" class="ui-content">
-        <h3 class="ui-title" id="songselect">-Selecteer gewenste vers</h3>
+        <div data-role="collapsible">
+          <h4 id="song-tekst">-songtekst</h4>
+          <div id="songLyrics"></div>
+        </div>
+        <div id="songselect">-Selecteer gewenste vers</div>
+        <h3 class="ui-title" id="songselect2">-</h3>
         <div class="ui-field-contain">
           <label for="set-verse" id="lblSetVerse">-Presentatie volgorde</label>
           <input type="text" name="set-verse" id="set-verse" value=""  data-clear-btn="true"/>
@@ -419,7 +425,8 @@ console.log("DOM is ready");
       <h2>Requirements:</h2>
       <ul>
         <li>Opensong must be running with Automation API enabled <br>(to enable, goto the generic settings, on the system tab)</li>
-        <li>Tested with OpenSong 2.2.7</li>
+        <li>Insert song requiries OpenSong 2.2.7 or newer</li>
+        <li>All other functions require OpenSong 2 or newer</li>
       </ul>
     </div>
   </div>
