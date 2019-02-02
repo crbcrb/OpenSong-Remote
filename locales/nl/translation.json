@@ -7,8 +7,8 @@
     "remote": "Remote screen",
     "searchP": "Zoek presentatie",
     "searchL": "Lied toevoegen",
-    "close": "sluiten",
-    "info": "info",
+    "close": "Sluiten",
+    "info": "Info",
     "refresh": "Vernieuwen",
     "tabService": "Liturgie",
     "tabSlide": "Dia's",
@@ -50,7 +50,7 @@
     "net6": "geen lopende presentatie",
     "bridge": "brug",
     "tag": "tussenspel",
-    "chorus": "refr.",
+    "chorus": "refrein",
     "choose": "maak een keuze..."
     
   },

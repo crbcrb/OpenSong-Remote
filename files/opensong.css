@@ -14,27 +14,23 @@
   white-space: normal;
   text-overflow: initial;
 }
-#remote-screen.ui-page-theme-a, #remote-screen.ui-overlay-a {
+#remote-screen.ui-page-theme-a, .ui-overlay-a {
   background-color: #000;
-}
-.screen-kop {
-  font-size: 5vmin;
+  text-shadow: .125em .125em .125em  rgba(0,0,0,0.7);
 }
 .screen-tekst {
   font-family: calibri, sans-serif;
   font-size: 10vmin;
   font-weight: normal;
 }
+#current-screen-titel {
+  font-size: 7vmin;
+  font-style: italic;
+  text-align: center;
+}
 .screen-tekst img {
   object-fit: contain;
-  display: block;
   margin: auto;
-}
-.rboven {
-  position:absolute;
-  top:0;
-  right:0;
-  z-index:99;
 }
 .geenpad {
   padding: 0;
@@ -52,13 +48,13 @@
 @media screen and (orientation:portrait) {
     /* Portrait styles */
   .screen-tekst img {
-    max-width: 100%;
+    max-width: 99vw;
   }
 }
 @media screen and (orientation:landscape) {
     /* Landscape styles */
   .screen-tekst img {
-    max-height: 99%;
+    max-height: 99vh;
   }
 }
 @media screen and (min-width: 560px) {

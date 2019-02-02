@@ -19,6 +19,7 @@
   <script src="cordova.js"></script>  
   <script src="files/jquery-2.1.1.min.js"></script>
   <!--<script type="text/javascript" src="files/jquery-migrate-1.2.1.js"></script>-->
+  <script src="files/jquery.fullscreen.min.js"></script>
   <script src="files/opensong.js"></script>
   <script src="files/jquery.mobile-1.4.5.min.js"></script>
   <script src="files/i18next-1.7.3.min.js"></script>
@@ -243,7 +244,7 @@ console.log("DOM is ready");
 <!-- xxxxxxxxxxxxxxxxxx remote-screen xxxxxxxxxxxxxxxxxxxxxxxxxx -->
 <div data-role="page" id="remote-screen" class="ui-page-theme-c">
   <div id="remote-main" data-role="main" class="ui-content">
-    <div class="rboven"><a href="#leftpanel1" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-btn-icon-left">&nbsp;</a></div>
+    <div id="current-screen-titel" class="screen-tekst"></div>
     <div id="current-screen-tekst" class="screen-tekst"></div>
   </div>
 </div>
@@ -294,8 +295,13 @@ console.log("DOM is ready");
 	</div>
 	<div class="ui-field-contain" data-type="horizontal">
 	<label for="screen-size" id="lblSize">tekst grootte:</label>
-	<input type="range" name="screen-size" id="screen-size" value="40" min="10" max="200" data-highlight="true"/>
+	<input type="range" name="screen-size" id="screen-size" value="5" min="1" max="20" data-highlight="true"/>
       </div>
+    <div data-role="controlgroup" data-type="horizontal">
+      <a href="#" id="full-on" data-role="button" data-theme="c">Full screen on</a>
+      <a href="#" id="full-off" data-role="button" data-theme="b">Full screen off</a>
+    </div>
+
    </div>
     <h3 class="ui-bar ui-bar-a" id="barSlide">Dia regelaar</h3>
     <div class="ui-body">
@@ -381,7 +387,7 @@ console.log("DOM is ready");
     <div id="song-status">-Even geduld, lijst wordt opgehaald...</div>
     <div data-role="popup" data-dismissible="false" id="popupSong" class="ui-content" data-theme="e">
       <div role="main" class="ui-content">
-        <div data-role="collapsible">
+        <div data-role="collapsible" data-mini="true">
           <h4 id="song-tekst">-songtekst</h4>
           <div id="songLyrics"></div>
         </div>
@@ -421,7 +427,7 @@ console.log("DOM is ready");
     <h3 class="ui-bar ui-bar-a" id="barSlide">Opensong remote</h3>
     <div class="ui-body">
       <p>OpenSong is a free, open-source software application created to manage lyrics, chords, lead sheets, overheads, computer projection, and more. More info on <a href="http://opensong.org" target="_blank">opensong.org</a></p>
-      <h3>version: 0.99.9</h3>
+      <h3>version: 0.99.9 d</h3>
       <h2>Requirements:</h2>
       <ul>
         <li>Opensong must be running with Automation API enabled <br>(to enable, goto the generic settings, on the system tab)</li>

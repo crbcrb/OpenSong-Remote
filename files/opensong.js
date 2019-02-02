@@ -16,12 +16,14 @@ var lastSectie = -1;
 var lastSlide = -1;
 var currentSectie = -1;
 var currentSlide = -1;
+var totalSlides = -1;
 var Playlist;
 var sok;
 var loadServiceBusy;
 var loadControllerBusy;
 var updateStatusBusy;
 var lastUrl;
+var invoegVersie = 1;   // 2 = support songinsert with comma ; 1 = support songinsert with spaces
 
 if (localStorage["OpenSongHost"] === null) {
   localStorage["OpenSongHost"] = '127.0.0.1';
@@ -79,12 +81,14 @@ window.OpenSong = {
        return;
     }
     loadServiceBusy = true;
+    console.log('GET "presentation/slide/list"');
     $.ajax({
       type: "GET",
       url: OpenSongHost + "presentation/slide/list",
       dataType: "xml",
 //      async : false,
       success: function (xmlPlaylist) {
+          //console.log('GET "presentation/slide/list" success');
           Playlist = xmlPlaylist;
           // voeg sectienummer toe aan playlist
           vorige = 'xxxxxxxxx';
@@ -102,42 +106,47 @@ window.OpenSong = {
                 vorigesoort = soort;
              }
           });
-
-          var s = 1;   // tel songs
-          var ul = $("#service-manager > div[role=main] > ul");
-          ul.html("");
-          vorige = 'xxxxxxxxx';
-          vorigesoort = '';
-          i = 1;  // tel secties
-          $(xmlPlaylist).find('response').children().each(function(){
-            if ($(this).attr('identifier')) {
-              // dit slaat slides zonder identifier over (meestal stylesheets)
-              var n = $(this).attr('identifier');  // 
-              var name = $(this).attr('name');
-              var soort = $(this).attr('type');
-              if ((name != vorige) || (soort != vorigesoort)) {
-                var title = $(this).find('title').text();
-                if (soort == 'song') {
-                  var li = $("<li data-icon=\"false\">").append(
-                  $("<a href=\"#\">").attr("slide",n).attr("song", parseInt(s, 10)).text(name ));
-                  s++;
-                } else {
-                  var li = $("<li data-icon=\"false\">").append(
-                  $("<a href=\"#\">").attr("slide", parseInt(n, 10)).text(name));
+          var n = $(xmlPlaylist).find('response').find('slide').length;
+          //console.log('total slides: ' + totalSlides + '; nu ontvangen: ' + n);
+          if (n != totalSlides) {
+            // aantal is veranderd, nu bijwerken
+            totalSlides = n;
+            var s = 1;   // tel songs
+            var ul = $("#service-manager > div[role=main] > ul");
+            ul.html("");
+            vorige = 'xxxxxxxxx';
+            vorigesoort = '';
+            i = 1;  // tel secties
+            $(xmlPlaylist).find('response').children().each(function(){
+              if ($(this).attr('identifier')) {
+                // dit slaat slides zonder identifier over (meestal stylesheets)
+                var n = $(this).attr('identifier');  // 
+                var name = $(this).attr('name');
+                var soort = $(this).attr('type');
+                if ((name != vorige) || (soort != vorigesoort)) {
+                  var title = $(this).find('title').text();
+                  if (soort == 'song') {
+                    var li = $("<li data-icon=\"false\">").append(
+                    $("<a href=\"#\">").attr("slide",n).attr("song", parseInt(s, 10)).text(name ));
+                    s++;
+                  } else {
+                    var li = $("<li data-icon=\"false\">").append(
+                    $("<a href=\"#\">").attr("slide", parseInt(n, 10)).text(name));
+                  }
+                  i++;
+                  li.attr("slide",n);
+                  li.attr("sectie",i);
+                  li.children("a").click(OpenSong.setSectie);
+                  ul.append(li);
+                  vorige = name;
+                  vorigesoort = soort;
                 }
-                i++;
-                li.attr("slide",n);
-                li.attr("sectie",i);
-                li.children("a").click(OpenSong.setSectie);
-                ul.append(li);
-                vorige = name;
-                vorigesoort = soort;
+                n++;
               }
-              n++;
+            });  // einde each function
+            if (ul.haschildren) {
+              ul.listview().listview("refresh");
             }
-          });  // einde each function
-          if (ul.haschildren) {
-            ul.listview().listview("refresh");
           }
           loadServiceBusy = false;
           OpenSong.showService();
@@ -192,7 +201,7 @@ window.OpenSong = {
   },
   loadController: function () {
     console.groupCollapsed('start loadController');
-    //console.trace();
+    console.trace();
     var n = $("#slides li").length;
     //console.log('aantal items: ',n);
     if ((currentSectie == lastSectie) && (lastSectie != -1) && (n>1)){
@@ -233,7 +242,7 @@ window.OpenSong = {
                 $("<a href=\"#\">").attr("slide", parseInt(s, 10)).attr('vers',vers).html(tekst));
         li.children("a").click(OpenSong.setSlide);
         ul.append(li);
-        lastUrl = OpenSongHost + "presentation/slide/" + s;
+        lastUrl = "presentation/slide/" + s;
         ajaxBusy++;
         console.log('ajax call %d afgevuurd',ajaxBusy);
         $.ajax({
@@ -293,8 +302,8 @@ window.OpenSong = {
                   verst = vers.replace(/V/i, '');
                   verst = verst.replace(/B/gi,i18n.t("setup.bridge"));
                   verst = verst.replace(/C/gi, i18n.t("setup.chorus"));
-                  verzen = verzen.replace(/T/gi, i18n.t("setup.tag"));
-                  tekst = '<sup>' + verst + '. </sup>' + tekst;
+                  verst = verst.replace(/T/gi, i18n.t("setup.tag"));
+                  tekst = '<sup>' + verst + ' </sup>' + tekst;
                 }
               }
               if ($('#regelaarsoort-b').is(":checked")) {
@@ -320,7 +329,7 @@ window.OpenSong = {
             //      als alle ajax calls klaar zijn
             ajaxBusy--;
             if (ajaxBusy <= 0) {
-              console.log('alle ajax calls zijn klaar, doe nu showController');
+              //console.log('alle ajax calls zijn klaar, doe nu showController');
               OpenSong.showController();
             } else {
               //console.log('nog %d uitstaande ajax calls',ajaxBusy);
@@ -400,6 +409,7 @@ window.OpenSong = {
     console.groupEnd();
   },
   showRemoteScreen : function () {
+    console.groupCollapsed('start showRemoteScreen');
     if (($('#screensoort-a').is(":checked")) && (lastMode != 'B')) {
       // zwarte letters op wit scherm
       $("#remote-screen").removeClass("ui-page-theme-a").addClass("ui-page-theme-c")
@@ -410,38 +420,58 @@ window.OpenSong = {
 
     if (lastMode == 'N') {
       var sn = currentSlide;
-      var tsize = $("#screen-size").val();
-      lastUrl = OpenSongHost + "presentation/slide/" + sn;
+      var tsize = localStorage["OpenSongtekstSize"];
+      lastUrl = "presentation/slide/" + sn;
         $.ajax({
           type: "GET",
-          url: lastUrl,
+          url: OpenSongHost + lastUrl,
           dataType: "xml",
           success: function (xmlSong) {
-            tekst = $(xmlSong).find('response').find('slide').find('title').text();
+            titel = $(xmlSong).find('response').find('slide').find('title').text();
             verzen = $(xmlSong).find('response').find('slide').find('presentation').text();
-            if (tekst != '') {
-              if (verzen != '') {
-                verzen = verzen.replace(/V/gi, '');
-                verzen = verzen.replace(/B/gi, i18n.t("setup.bridge"));
-                verzen = verzen.replace(/C/gi, i18n.t("setup.chorus"));
-                verzen = verzen.replace(/T/gi, i18n.t("setup.tag"));
-                verzen = verzen.replace(/ /g, ', ');
-                $("#current-screen-titel").text(tekst + ": " + verzen);
-              } else {
-               $("#current-screen-titel").text(tekst);
+            if (titel != '') {
+              if (verzen.trim() != '') {
+                aVerzen = verzen.split(' ');
+                currentVers = $(xmlSong).find('response').find('slides').find('slide').attr('PresentationIndex');
+                // array index is zero based, index is 1 based
+                //console.log('dit vers: ' + aVerzen[currentVers-1]);
+                var i;
+                verzen = '';
+                for (i = 0; i < aVerzen.length; i++) {
+                  if (i == (currentVers -1)) {
+                    if (/^B/i.test(aVerzen[i]) ) {
+                      verzen += '<strong>' + i18n.t("setup.bridge") + '</strong> ';
+                    }
+                    if (/^C/i.test(aVerzen[i]) ) {
+                      verzen += '<strong>' + i18n.t("setup.chorus") + '</strong> ';
+                  console.log('check vers: ' + aVerzen[i]);
+                    }
+                    if (/^T/i.test(aVerzen[i]) ) {
+                      verzen += '<strong>' + i18n.t("setup.tag") + '</strong> ';
+                    }
+                    if (/^V(\S)*/i.test(aVerzen[i]) ) {
+                      verzen += '<strong>' + aVerzen[i].substr(1,15) + '</strong> ';
+                    }
+                  } else {
+                    if (/^V(\S)*/i.test(aVerzen[i]) ) {
+                      verzen += aVerzen[i].substr(1,15)  + ' ';
+                    }
+                  }
+                }
+                titel += ': ' + verzen.trim().toLowerCase().replace(/ /g, ', '); 
               }
             } else {
-              $("#current-screen-titel").text("");
+              titel = '';
             }
-            // $("#current-screen-titel").css('font-size',(tsize * 0.6) + 'px');
             var soort = $(xmlSong).find('response').find('slide').attr('type');
             $(xmlSong).find('response').find('slide').find('slides').find('slide').each(function() {
               var tekst = $(this).find('body').text();
               
               if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
+                $("#current-screen-titel").css('font-size',(tsize * 0.85) + 'vmin').html('');                
                 $('#remote-main').addClass('geenpad')
                 var ww = $(window).width();
-                var wh = $(window).height();
+                var wh = $(window).height() -20;
                 tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + sn;   
                 if (wh < (ww * 3 / 4)) {
                   tekst = tekst + '/preview/height:' + wh;   
@@ -452,6 +482,7 @@ window.OpenSong = {
                 //tekst = '<img src="' + OpenSongHost + 'presentation/slide/current/image/' + Math.random() + '">';   
               } else {
                 $('#remote-main').removeClass('geenpad')
+                $("#current-screen-titel").css('font-size',(tsize * 0.85) + 'vmin').html(titel);                
               }
               
               if (soort == 'external') {
@@ -461,7 +492,6 @@ window.OpenSong = {
                 var desc = $(this).find('description').text();
                 tekst = tekst + '(' + app + ') ' + desc + ' - ' + bestand;
               }
-              tekst = tekst.replace(/\n/g, '<br />');
               
               if (soort == 'song') {
                 if ($(xmlSong).attr('id')) {
@@ -475,7 +505,14 @@ window.OpenSong = {
                   }
                 }
               }
-              $("#current-screen-tekst").css('font-size',tsize + 'px').html(tekst);
+              if (soort == 'scripture') {
+                // maak versnummers (1-3 cijfers) superscript
+                tekst = tekst.replace(/(\d\d?\d?) /g,'<sup>$1</sup>&nbsp;');
+              }
+              tekst = tekst.replace(/\n/g, '<br />');
+              tekst = tekst.replace(/\u{A0}/g, '&nbsp;');
+              tekst = tekst.replace(/\u{AD}/g, '&shy;');
+              $("#current-screen-tekst").css('font-size',tsize + 'vmin').html(tekst);
             })
           } // ajax succes function
       })   // ajax
@@ -485,10 +522,11 @@ window.OpenSong = {
         $("#current-screen-tekst").html('');
       }
     }
+    console.groupEnd();
   },
   doeAktie: function(soort,opdracht) {
     console.groupCollapsed('start doeAktie');
-    lastUrl = OpenSongHost + opdracht;
+    lastUrl = opdracht;
     console.log('opdracht: ',opdracht);
     if (localStorage["OpenSongPwd"] != '' ) {
       $.ajax({
@@ -504,8 +542,13 @@ window.OpenSong = {
         },
         succes: function (antwoord) {
           $("#host-status2").html('last Ajax response: ' + antwoord);
+        },
+        error : function (xhr,txtStatus,ErrorThrown) {
+          if (xhr.status != 0) {
+            console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
+          }
         }
-      });
+      })
     } else {
       $.ajax({
         type: "POST",
@@ -582,6 +625,7 @@ window.OpenSong = {
       lastSlide = -1;
       currentSectie = -1;
       currentSlide = -1;
+      totalSlides = -1;
       loadServiceBusy = false;
       loadControllerBusy = false;
       updateStatusBusy = false;
@@ -674,19 +718,23 @@ window.OpenSong = {
     console.groupEnd();
   },
   nextItem: function (event) {
+    console.log('next item');
     event.preventDefault();
     OpenSong.doeAktie("text","presentation/section/next");
   },
   previousItem: function (event) {
+    console.log('previous item');
     event.preventDefault();
     OpenSong.doeAktie("text","presentation/section/previous","");
   },
   nextSlide: function (event) {
+    console.log('next slide');
     event.preventDefault();
     //console.log('nextSlide: ' + event.type);
     OpenSong.doeAktie("text","presentation/slide/next","");
   },
   previousSlide: function (event) {
+    console.log('previous slide');
     event.preventDefault();
     //console.log('previousSlide: ' + event.type);
     OpenSong.doeAktie("text","presentation/slide/previous","");
@@ -734,6 +782,7 @@ window.OpenSong = {
   setHost: function (event) {
     //console.groupCollapsed('start setHost');
     typeof event !== 'undefined' ? event.preventDefault() : false;
+    OpenSong.saveSettings;
     if ((typeof sok != 'undefined') && (sok.readyState == 1)) {
       // connectie is open, eerst sluiten
       sok.close();
@@ -817,8 +866,6 @@ window.OpenSong = {
     if (localStorage["OpenSongHost"] === null) {
       $( "body" ).pagecontainer( "change", "#setup"); 
     } else {
-      //OpenSong.getStatus();
-      //OpenSong.loadService();
       if ($("#service-manager").is(":visible")) { OpenSong.showService(); }
       if ($("#slide-controller").is(":visible")) { OpenSong.showController(); }
       if ($("#remote-screen").is(":visible")) { OpenSong.showRemoteScreen(); }
@@ -844,7 +891,7 @@ window.OpenSong = {
     }
     console.log('getstatus');
     //if (timer1) {clearTimeout(timer1); }
-    lastUrl = OpenSongHost + "presentation/status";
+    lastUrl = "presentation/status";
     $.ajax({
       type: "GET",
       url: OpenSongHost + "presentation/status",
@@ -855,8 +902,15 @@ window.OpenSong = {
     })
   },
   loadRemoteScreen: function() {
-    localStorage["OpenSongtekstSize"] = $("#screen-size").val();
-    OpenSong.showRemoteScreen();
+   OpenSong.showRemoteScreen();
+  },
+  showRemoteMenu: function() {
+    console.log('showRemoteMenu');
+    $( "#leftpanel1" ).panel( "open" );
+    setTimeout(function() {
+        $( "#leftpanel1" ).panel( "close" );
+      },7000);
+
   },
   showPresent: function() {
     //console.groupCollapsed('start showPresent');
@@ -1010,7 +1064,7 @@ window.OpenSong = {
     if (event) {event.preventDefault(); }
     map = $('#search-folders option:selected').text();
     song = $("#search-results .ui-btn-e").text();
-    console.log('songdetails ophalen van ' + song + ' uit ' + map);
+    //console.log('songdetails ophalen van ' + song + ' uit ' + map);
     $("#songselect").text(map + '/' + song);
     $("#songselect2").text();
     $("#popupSong").popup("open");
@@ -1043,25 +1097,33 @@ window.OpenSong = {
     map = $('#search-folders option:selected').text();
     song = $("#search-results .ui-btn-e").text();
     verses = $("#set-verse").val();
-    //verses = verses.replace(" ",",");
+    if (invoegVersie >= 2) {
+      verses = verses.replace(/ /gi,",");
+    }
     verses = verses.trim();
-    console.log('nu invoegen: ' + song + ' uit ' + map);
+    //console.log('nu invoegen: ' + song + ' uit ' + map);
     OpenSong.doeAktie("text",'presentation/slide/song/folder:'
                   + encodeURI(map) + '/song:' + encodeURI(song)
                   //+ '/after:0'
                   + '/order:' + encodeURI(verses)
                   ,'');
     $("#popupSong").popup("close");
-    currentSlide = -1; // force reload
-    setTimeout(function() {
-        $('body').pagecontainer( "change", "#service-manager");
-    },1000);
+    if (invoegVersie == 1) {
+      /* opensong geeft geen status update (bug!) na remote song insert
+       * daarom schoppen we er nog een alert cancel achteraan */
+      setTimeout(function() {
+        OpenSong.doeAktie("text","presentation/screen/alert/");
+      },100);
+    }
+    //currentSlide = -1; // force reload
+      setTimeout(function() {
+          $('body').pagecontainer( "change", "#service-manager");
+      },1000);
   },
   presentShow: function (event) {
     if (event) {event.preventDefault(); }
     //console.groupCollapsed('start presentShow');
     //console.log('lastMode: ',lastMode);
-    OpenSong.saveSettings();
     if ($("#set-show").hasClass("ui-btn-e")) {
       present = $('#search-sets option:selected').val();
       //console.log('nu beamen: ' + present + ' (presentatie)');
@@ -1085,8 +1147,21 @@ window.OpenSong = {
         },3000);
     }
   },
+  fullScreenOn: function () {
+    console.log('full screen on');
+    $("#full-on").removeClass("ui-btn-c").addClass("ui-btn-b")
+    $("#full-off").removeClass("ui-btn-b").addClass("ui-btn-c")
+    $('body').fullscreen();
+    
+  },
+  fullScreenOff: function () {
+    $("#full-on").removeClass("ui-btn-b").addClass("ui-btn-c")
+    $("#full-off").removeClass("ui-btn-c").addClass("ui-btn-b")
+    console.log('full screen off');
+    $.fullscreen.exit();
+  },
   saveSettings: function() {
-    //console.groupCollapsed('start saveSettings');
+    console.groupCollapsed('start saveSettings');
     localStorage["OpenSongHost"] = $("#set-host").val();
     localStorage["OpenSongPort"] = $("#set-port").val();
     localStorage["OpenSongPwd"] = $.trim($("#set-pwd").val());
@@ -1095,7 +1170,7 @@ window.OpenSong = {
     localStorage["OpenSongDiaregelaar"] = $('input[name=regelaarsoort-]:checked').val();
     localStorage["OpenSongDisplay"] = $('input[name=display-]:checked').val();
     //console.log(localStorage);
-    //console.groupEnd();
+    console.groupEnd();
   },
   escapeString: function (string) {
     return string.replace(/\\/g, "\\\\").replace(/"/g, "\\\"")
@@ -1121,8 +1196,8 @@ $(document).on("click","#service-next", OpenSong.nextItem);
 $(document).on("click","#service-previous", OpenSong.previousItem);
 // Slide Controller
 $(document).on("pageinit", "#slide-controller", function(){   
-    $('#slide-controller').on( "swipeleft",OpenSong.previousSlide);
-    $('#slide-controller').on( "swiperight",OpenSong.nextSlide);
+$('#slide-controller').on( "swipeleft",OpenSong.previousSlide);
+$('#slide-controller').on( "swiperight",OpenSong.nextSlide);
 });
 $(document).on("pagebeforeshow", "#slide-controller", OpenSong.loadController);
 $(document).on("click","#controller-refresh", OpenSong.Herladen);
@@ -1131,7 +1206,10 @@ $(document).on("click","#controller-previous", OpenSong.previousSlide);
 $(document).on("click","#controller2-next", OpenSong.nextSlide);
 $(document).on("click","#controller2-previous", OpenSong.previousSlide);
 // Remote screen
-$(document).on("pagebeforeshow", "#remote-screen", OpenSong.loadRemoteScreen);
+$(document).on("pagebeforeshow","#remote-screen", OpenSong.loadRemoteScreen);
+$(document).on("click","#remote-screen",OpenSong.showRemoteMenu);
+$(document).on("click","#remote-main",OpenSong.showRemoteMenu);
+$('#remote-screen').on( "swiperight",OpenSong.showRemoteMenu);
 
 // onderstaande zet alle knoppen met deze id goed
 $(document).on("click", "#controller-blank", OpenSong.blankDisplay);
@@ -1141,6 +1219,8 @@ $(document).on("click", "#controller-show", OpenSong.showDisplay);
 // Instellingen
 $(document).on("pagebeforeshow", "#setup", OpenSong.showHost);
 $(document).on("click", "#set-submit", OpenSong.setHost);
+$(document).on("click", "#full-on", OpenSong.fullScreenOn);
+$(document).on("click", "#full-off", OpenSong.fullScreenOff);
 // Alerts
 $(document).on("click", "#alert-submit", OpenSong.showAlert);
 $(document).on("click", "#alert-cancel", OpenSong.cancelAlert);
@@ -1154,7 +1234,34 @@ $(document).on("pageshow", "#search", OpenSong.showSearch);
 $(document).on("click", "#song-insert", OpenSong.insertSong);
 $(document).on("click", "#song-insert2", OpenSong.insertSongYes);
 $(document).on("change", "#search-folders", OpenSong.doeSearch);
+// menu
+$(document).on("panelopen", "#leftpanel1", OpenSong.saveSettings);
+// handle arrow keys
 
+/* werkt om een of andere reden niet...
+ *$(document).on('keypress',function(e) {
+  console.log('keypress ' + e.which);
+    switch(e.which) {
+        case 37: // left
+          console.log('key left');
+          OpenSong.previousItem;
+        break;
+        case 38: // up
+          OpenSong.previousSlide;
+        break;
+        case 39: // right
+          OpenSong.nextItem;
+        break;
+        case 40: // down
+          console.log('key down');
+          setTimeout(function() {
+            OpenSong.nextSlide;
+          },30);
+        break;
+        default: return; // exit this handler for other keys
+    }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+}); */
 $.ajaxSetup({
   statusCode: {
     401: function() {
@@ -1162,9 +1269,15 @@ $.ajaxSetup({
     },
     403: function() {
       $("#host-status2").html('403 - Forbidden');
+    },
+    500: function() {
+      $("#host-status2").html('500 - Internal server error');
     }
   },
   error : function (xhr,txtStatus,ErrorThrown) {
+    if (xhr.status != 0) {
+      console.log('Ajax error- ' + txtStatus + ' op url ' + lastUrl);
+    }
     if (xhr.status == 404) {
       $("#host-status2").html('<strong>Ajax: </strong> ' + txtStatus + " " + xhr.status
           + " " + ErrorThrown + " (" + lastUrl + ")");
