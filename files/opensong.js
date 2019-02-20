@@ -347,7 +347,7 @@ window.OpenSong = {
       naam = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('name');
       var s = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('identifier');
       if (naam != titel) {
-        titel = '(' + naam + ') ' + titel;
+        titel = naam + ' ' + titel;
       }
       var li = $("<li data-icon=\"false\">").append(
         $("<a href=\"#\">").attr("slide",s).html(i18n.t("nav.next") + ': ' + titel));
@@ -360,7 +360,7 @@ window.OpenSong = {
           titel = $(this).find('title').text();
           naam = $(this).attr('name');
           if (naam != titel) {
-            titel = '(' + naam + ') ' + titel;
+            titel = naam + ' ' + titel;
           }
           var s = $(this).attr('identifier');
           var li = $("<li data-icon=\"false\">").append(
@@ -604,12 +604,20 @@ window.OpenSong = {
       }
       var currentMode = $(xml).find('response').find('presentation').find('screen').attr('mode');
       // check nu off slidename van status klopt met slidename in de playlist
-      statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
-      playItemName = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('name');
-      if ((lastSlide != -1) && (lastSlide == currentSlide) && (currentMode == lastMode)) {
-        console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
+      statusReden = $(Playlist).find('response').attr('reason');
+      if (statusReden !== undefined) {
+        console.log('response reason ' + statusReden);
+        invoegVersie = 2
         lastSlide = -1; lastSectie = -1;  // force reload        
       }
+      if (invoegVersie < 2) {
+        if ((lastSlide != -1) && (lastSlide == currentSlide) && (currentMode == lastMode)) {
+          console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
+          lastSlide = -1; lastSectie = -1;  // force reload        
+        } 
+      }
+      statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
+      playItemName = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('name');
       if ((statusNaam !=='') && (statusNaam !== playItemName)) {
         console.log('reloaden! - statusNaam: ' + statusNaam + '; playItemName: ' + playItemName);
         lastSlide = -1; lastSectie = -1;  // force reload        
