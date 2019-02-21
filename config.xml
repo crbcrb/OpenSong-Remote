@@ -4,7 +4,7 @@
 <widget xmlns = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id = "info.dehoeksteen.opensongremote"
-        version = "0.99.4">
+        version = "1.0.0">
 
     <name>OpenSongRemote</name>
 
@@ -15,7 +15,7 @@
     <author href="http://home.solcon.nl/c.r.berensen" email="roland@solcon.nl">
         CRB
     </author>
-<preference name='phonegap-version' value='cli-5.2.0' />
+<preference name='phonegap-version' value='cli-8.0.0' />
 
 <!-- specifieer te compileren platform -->    
     <gap:platform name="android" />

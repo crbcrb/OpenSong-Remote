@@ -70,18 +70,18 @@ window.OpenSong = {
   },
   loadService: function (event) {
     // service is de hele liturgie
-    console.groupCollapsed('start loadService');
+    //console.groupCollapsed('start loadService');
     //console.trace();
     if (event) {
       event.preventDefault();
     }
     if (loadServiceBusy == true) {
-       console.log('exit want loadService is al bezig');
-       console.groupEnd();
+       //console.log('exit want loadService is al bezig');
+       //console.groupEnd();
        return;
     }
     loadServiceBusy = true;
-    console.log('GET "presentation/slide/list"');
+    //console.log('GET "presentation/slide/list"');
     $.ajax({
       type: "GET",
       url: OpenSongHost + "presentation/slide/list",
@@ -155,17 +155,17 @@ window.OpenSong = {
           }
         }  // einde succes function  
     });   // einde ajax
-    console.log('einde loadService');
-    console.groupEnd();
+    //console.log('einde loadService');
+    //console.groupEnd();
   },
   showService : function () {
-    console.groupCollapsed('start showService');
+    //console.groupCollapsed('start showService');
     //console.trace();
     var ip = 0;
     var ih = 0;
     if (currentSlide == -1) {
       OpenSong.getStatus();
-    console.groupEnd();
+    //console.groupEnd();
       return;
     }
     if (currentSectie == 0) {
@@ -173,7 +173,7 @@ window.OpenSong = {
     } else {
       n = currentSectie;
     }
-    console.log('currentSectie: '+n+'; currentSlide: '+ currentSlide);
+    //console.log('currentSectie: '+n+'; currentSlide: '+ currentSlide);
     $("#service-manager div[role=main] ul .ui-btn-e").removeClass("ui-btn-e").addClass("ui-btn ui-btn-c");
     $("#service-manager div[role=main] ul li").each(function () {
       var item = $(this);
@@ -185,7 +185,7 @@ window.OpenSong = {
         return false;
       }
     });
-    console.log('scrollen naar: ',ip);
+    //console.log('scrollen naar: ',ip);
     try {
       $("#service-manager div[role=main] ul").listview("refresh");
       var wh = $(window).height() - 100;
@@ -197,21 +197,21 @@ window.OpenSong = {
     catch(e){
 //      alert('An error has occurred: '+e.message)
     }
-    console.groupEnd();
+    //console.groupEnd();
   },
   loadController: function () {
-    console.groupCollapsed('start loadController');
-    console.trace();
+    //console.groupCollapsed('start loadController');
+    //console.trace();
     var n = $("#slides li").length;
     //console.log('aantal items: ',n);
     if ((currentSectie == lastSectie) && (lastSectie != -1) && (n>1)){
-      console.log('exit want nog in zelfde sectie')
-      console.groupEnd();
+      //console.log('exit want nog in zelfde sectie')
+      //console.groupEnd();
       return;
     }
     if (loadControllerBusy == true) {
-      console.log('exit want loadController is bezig')
-      console.groupEnd();
+      //console.log('exit want loadController is bezig')
+      //console.groupEnd();
       return;
     }
     lastSectie = currentSectie;
@@ -244,7 +244,7 @@ window.OpenSong = {
         ul.append(li);
         lastUrl = "presentation/slide/" + s;
         ajaxBusy++;
-        console.log('ajax call %d afgevuurd',ajaxBusy);
+        //console.log('ajax call %d afgevuurd',ajaxBusy);
         $.ajax({
           type: "GET",
           url: OpenSongHost + "presentation/slide/" + s,
@@ -375,15 +375,15 @@ window.OpenSong = {
     // showcontroller kan nu nog niet lopen omdat alle ajax calls nog niet terug zijn
 //    OpenSong.showController();
     loadControllerBusy = false;
-    console.log('einde loadController')
-    console.groupEnd();
+    //console.log('einde loadController')
+    //console.groupEnd();
   },
   showController : function () {
-    console.groupCollapsed('start showController');
+    //console.groupCollapsed('start showController');
     //console.trace();
     if (currentSlide == -1) {
       OpenSong.getStatus();
-    console.groupEnd();
+    //console.groupEnd();
       return;
     }
     var ip  = 0;
@@ -399,17 +399,17 @@ window.OpenSong = {
         return false;
       }
     });
-    ////console.log('scrollen naar: ',ip);
+    //console.log('scrollen naar: ',ip);
     $("#slide-controller div[role=main] ul").listview("refresh");
     var wh = $(window).height() - 100;
     var ws = $(window).scrollTop();
     if (((ip + ih - ws) > wh ) || ((ip-ih-ih) < ws)) {
       $.mobile.silentScroll(ip-wh/2);
     }
-    console.groupEnd();
+    //console.groupEnd();
   },
   showRemoteScreen : function () {
-    console.groupCollapsed('start showRemoteScreen');
+    //console.groupCollapsed('start showRemoteScreen');
     if (($('#screensoort-a').is(":checked")) && (lastMode != 'B')) {
       // zwarte letters op wit scherm
       $("#remote-screen").removeClass("ui-page-theme-a").addClass("ui-page-theme-c")
@@ -444,7 +444,7 @@ window.OpenSong = {
                     }
                     if (/^C/i.test(aVerzen[i]) ) {
                       verzen += '<strong>' + i18n.t("setup.chorus") + '</strong> ';
-                  console.log('check vers: ' + aVerzen[i]);
+                  //console.log('check vers: ' + aVerzen[i]);
                     }
                     if (/^T/i.test(aVerzen[i]) ) {
                       verzen += '<strong>' + i18n.t("setup.tag") + '</strong> ';
@@ -522,12 +522,12 @@ window.OpenSong = {
         $("#current-screen-tekst").html('');
       }
     }
-    console.groupEnd();
+    //console.groupEnd();
   },
   doeAktie: function(soort,opdracht) {
-    console.groupCollapsed('start doeAktie');
+    //console.groupCollapsed('start doeAktie');
     lastUrl = opdracht;
-    console.log('opdracht: ',opdracht);
+    //console.log('opdracht: ',opdracht);
     if (localStorage["OpenSongPwd"] != '' ) {
       $.ajax({
         type: "POST",
@@ -545,7 +545,7 @@ window.OpenSong = {
         },
         error : function (xhr,txtStatus,ErrorThrown) {
           if (xhr.status != 0) {
-            console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
+            //console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
           }
         }
       })
@@ -560,7 +560,7 @@ window.OpenSong = {
         }
       });
     }
-    console.groupEnd();  
+    //console.groupEnd();  
   },
   setSectie: function (event) {
     event.preventDefault();
@@ -576,19 +576,19 @@ window.OpenSong = {
     OpenSong.doeAktie("text","presentation/slide/" + slideno);
   },
   updateStatus: function (data) {
-    console.group('start updateStatus');
+    //console.group('start updateStatus');
     //console.trace();
     if (data == 'OK') {
-      console.log('OK ontvangen');
-      console.groupEnd();
+      //console.log('OK ontvangen');
+      //console.groupEnd();
       return;
     };
     if (updateStatusBusy == true) {
-      console.log('is nog bezig');
-      console.groupEnd();
+      //console.log('is nog bezig');
+      //console.groupEnd();
       return;
     }
-    console.log('ontvangen status: ' + data);
+    //console.log('ontvangen status: ' + data);
     updateStatusBusy = true;
     parser=new DOMParser();
     xml=parser.parseFromString(data,"text/xml");
@@ -606,20 +606,20 @@ window.OpenSong = {
       // check nu off slidename van status klopt met slidename in de playlist
       statusReden = $(Playlist).find('response').attr('reason');
       if (statusReden !== undefined) {
-        console.log('response reason ' + statusReden);
+        //console.log('response reason ' + statusReden);
         invoegVersie = 2
         lastSlide = -1; lastSectie = -1;  // force reload        
       }
       if (invoegVersie < 2) {
         if ((lastSlide != -1) && (lastSlide == currentSlide) && (currentMode == lastMode)) {
-          console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
+          //console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
           lastSlide = -1; lastSectie = -1;  // force reload        
         } 
       }
       statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
       playItemName = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('name');
       if ((statusNaam !=='') && (statusNaam !== playItemName)) {
-        console.log('reloaden! - statusNaam: ' + statusNaam + '; playItemName: ' + playItemName);
+        //console.log('reloaden! - statusNaam: ' + statusNaam + '; playItemName: ' + playItemName);
         lastSlide = -1; lastSectie = -1;  // force reload        
       }
     } else {
@@ -723,26 +723,26 @@ window.OpenSong = {
     } // if currentMode != "X"
     lastSlide = currentSlide;
     updateStatusBusy = false;
-    console.groupEnd();
+    //console.groupEnd();
   },
   nextItem: function (event) {
-    console.log('next item');
+    //console.log('next item');
     event.preventDefault();
     OpenSong.doeAktie("text","presentation/section/next");
   },
   previousItem: function (event) {
-    console.log('previous item');
+    //console.log('previous item');
     event.preventDefault();
     OpenSong.doeAktie("text","presentation/section/previous","");
   },
   nextSlide: function (event) {
-    console.log('next slide');
+    //console.log('next slide');
     event.preventDefault();
     //console.log('nextSlide: ' + event.type);
     OpenSong.doeAktie("text","presentation/slide/next","");
   },
   previousSlide: function (event) {
-    console.log('previous slide');
+    //console.log('previous slide');
     event.preventDefault();
     //console.log('previousSlide: ' + event.type);
     OpenSong.doeAktie("text","presentation/slide/previous","");
@@ -826,7 +826,7 @@ window.OpenSong = {
       // The browser doesn't support WebSocket
         $("#host-status").html('<strong>' +  i18n.t("setup.net5") + '</strong>');
     } // if websocket
-    console.clear();
+    //console.clear();
     OpenSong.Herladen();
     //console.groupEnd();
   },
@@ -857,7 +857,7 @@ window.OpenSong = {
     //console.groupEnd();
   },
   Herladen: function () {
-    console.groupCollapsed('start herladen');
+    //console.groupCollapsed('start herladen');
     playlist = '';
     lastStatus = '';
     lastMode = '';
@@ -879,7 +879,7 @@ window.OpenSong = {
       if ($("#remote-screen").is(":visible")) { OpenSong.showRemoteScreen(); }
     }
     OpenSong.getStatus();
-    console.groupEnd();
+    //console.groupEnd();
   },
   showAlert: function (event) {
     event.preventDefault();
@@ -897,7 +897,7 @@ window.OpenSong = {
     if (event) {
       event.preventDefault();
     }
-    console.log('getstatus');
+    //console.log('getstatus');
     //if (timer1) {clearTimeout(timer1); }
     lastUrl = "presentation/status";
     $.ajax({
@@ -913,7 +913,7 @@ window.OpenSong = {
    OpenSong.showRemoteScreen();
   },
   showRemoteMenu: function() {
-    console.log('showRemoteMenu');
+    //console.log('showRemoteMenu');
     $( "#leftpanel1" ).panel( "open" );
     setTimeout(function() {
         $( "#leftpanel1" ).panel( "close" );
@@ -996,7 +996,7 @@ window.OpenSong = {
     var ih = 0;
     $("#search-results a").each(function () {
       var item = $(this);
-      ////console.log('item:  ',item.text());
+      //console.log('item:  ',item.text());
       if (item.hasClass('ui-btn-e')) {
         item = item.parent();
         ip = item.offset().top;
@@ -1004,7 +1004,7 @@ window.OpenSong = {
         return false;
       }
     });
-    ////console.log('scrollen naar: ',ip);
+    //console.log('scrollen naar: ',ip);
     var wh = $(window).height() - 100;
     var ws = $(window).scrollTop();
     if (((ip + ih - ws) > wh ) || ((ip-ih-ih) < ws)) {
@@ -1031,7 +1031,7 @@ window.OpenSong = {
           $(Songs).find('response').children().each(function() {
              if ($(this).attr('name')) {
                 var name = $(this).attr('name');
-                ////console.log('add: ' + name);
+                //console.log('add: ' + name);
                 var li = $('<li data-icon="false">').append($('<a href="#">').text(name));
                 li.children("a").click(OpenSong.selectSearch);
                 $('#search-results').append(li)
@@ -1049,10 +1049,10 @@ window.OpenSong = {
     //console.log('selected: ',song);
 
     $("#search-results .ui-btn-e").removeClass("ui-btn-e").addClass("ui-btn");
-    ////console.groupCollapsed('loop items');
+    //console.groupCollapsed('loop items');
     $("#search-results a").each(function () {
       var item = $(this);
-      ////console.log(item.text());
+      //console.log(item.text());
       if (item.text() == song) {
           item.removeClass("ui-btn-c").addClass("ui-btn-e");
           return false;
@@ -1146,7 +1146,7 @@ window.OpenSong = {
   },
   presentStop: function (event) {
     event.preventDefault();
-    console.log('start presentStop');
+    //console.log('start presentStop');
     OpenSong.doeAktie("text",'presentation/close');
     if ($("#popupP").parent().hasClass("ui-popup-active")){
       $("#popupP").popup("close");
@@ -1156,7 +1156,7 @@ window.OpenSong = {
     }
   },
   fullScreenOn: function () {
-    console.log('full screen on');
+    //console.log('full screen on');
     $("#full-on").removeClass("ui-btn-c").addClass("ui-btn-b")
     $("#full-off").removeClass("ui-btn-b").addClass("ui-btn-c")
     $('body').fullscreen();
@@ -1165,11 +1165,11 @@ window.OpenSong = {
   fullScreenOff: function () {
     $("#full-on").removeClass("ui-btn-b").addClass("ui-btn-c")
     $("#full-off").removeClass("ui-btn-c").addClass("ui-btn-b")
-    console.log('full screen off');
+    //console.log('full screen off');
     $.fullscreen.exit();
   },
   saveSettings: function() {
-    console.groupCollapsed('start saveSettings');
+    //console.groupCollapsed('start saveSettings');
     localStorage["OpenSongHost"] = $("#set-host").val();
     localStorage["OpenSongPort"] = $("#set-port").val();
     localStorage["OpenSongPwd"] = $.trim($("#set-pwd").val());
@@ -1178,7 +1178,7 @@ window.OpenSong = {
     localStorage["OpenSongDiaregelaar"] = $('input[name=regelaarsoort-]:checked').val();
     localStorage["OpenSongDisplay"] = $('input[name=display-]:checked').val();
     //console.log(localStorage);
-    console.groupEnd();
+    //console.groupEnd();
   },
   escapeString: function (string) {
     return string.replace(/\\/g, "\\\\").replace(/"/g, "\\\"")
@@ -1246,30 +1246,6 @@ $(document).on("change", "#search-folders", OpenSong.doeSearch);
 $(document).on("panelopen", "#leftpanel1", OpenSong.saveSettings);
 // handle arrow keys
 
-/* werkt om een of andere reden niet...
- *$(document).on('keypress',function(e) {
-  console.log('keypress ' + e.which);
-    switch(e.which) {
-        case 37: // left
-          console.log('key left');
-          OpenSong.previousItem;
-        break;
-        case 38: // up
-          OpenSong.previousSlide;
-        break;
-        case 39: // right
-          OpenSong.nextItem;
-        break;
-        case 40: // down
-          console.log('key down');
-          setTimeout(function() {
-            OpenSong.nextSlide;
-          },30);
-        break;
-        default: return; // exit this handler for other keys
-    }
-    e.preventDefault(); // prevent the default action (scroll / move caret)
-}); */
 $.ajaxSetup({
   statusCode: {
     401: function() {
