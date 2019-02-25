@@ -56,18 +56,28 @@ A list of available plugins are available at https://build.phonegap.com/docs/plu
 -->
 
     <!-- Define app icon for each platform. -->
-    <icon src="files/images/OpenSongLogo.png" />
-    <icon src="res/icon/android/icon-36-ldpi.png" gap:platform="android" gap:density="ldpi" />
-    <icon src="res/icon/android/icon-48-mdpi.png" gap:platform="android" gap:density="mdpi" />
-    <icon src="res/icon/android/icon-72-hdpi.png" gap:platform="android" gap:density="hdpi" />
-    <icon src="res/icon/android/icon-96-xhdpi.png" gap:platform="android" gap:density="xhdpi" />
-<!--    <icon src="res/icon/ios/icon-57.png" gap:platform="ios" width="57" height="57" />
-    <icon src="res/icon/ios/icon-72.png" gap:platform="ios" width="72" height="72" />
-    <icon src="res/icon/ios/icon-57-2x.png" gap:platform="ios" width="114" height="114" />
-    <icon src="res/icon/ios/icon-72-2x.png" gap:platform="ios" width="144" height="144" />
-    <icon src="res/icon/windows-phone/icon-48.png" gap:platform="winphone" />
-    <icon src="res/icon/windows-phone/icon-173.png" gap:platform="winphone" gap:role="background" />
--->
+    <platform name="android">
+        <!--
+            ldpi    : 36x36 px
+            mdpi    : 48x48 px
+            hdpi    : 72x72 px
+            xhdpi   : 96x96 px
+            xxhdpi  : 144x144 px
+            xxxhdpi : 192x192 px
+            <icon src="files/images/OpenSongLogo.png" />
+        -->
+        <icon src="res/android/icon/icon-36.png" density="ldpi" />
+        <icon src="res/android/icon/icon-48.png" density="mdpi" />
+        <icon src="res/android/icon/icon-72.png" density="hdpi" />
+        <icon src="res/android/icon/icon-96.png" density="xhdpi" />
+        <icon src="res/android/icon/icon-144.png" density="xxhdpi" />
+        <icon src="res/android/icon/icon-192.png" density="xxxhdpi" />
+        <preference name="SplashScreen" value="splash" />
+    </platform>    
+
+
+
+
     <gap:splash src="splash.png" />
     <!-- Define app splash screen for each platform. -->
     <gap:splash src="splash/splash-320x426.png" gap:platform="android" gap:density="ldpi"  width="320" height="426" />
