@@ -68,7 +68,7 @@ permission on your app, which PhoneGap requires.
         <splash src="res/android/splash/splash-320x426.png" density="port-ldpi"/>
         <splash src="res/android/splash/splash-320x470.png" density="port-mdpi"/>
         <splash src="res/android/splash/splash-480x640.png" density="port-hdpi"/>
-        <splash src="res/android/splash/splash-720x960.png.png" density="port-xhdpi"/>
+        <splash src="res/android/splash/splash-720x960.png" density="port-xhdpi"/>
     </platform>    
 
     <!--
