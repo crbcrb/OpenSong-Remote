@@ -507,7 +507,7 @@ window.OpenSong = {
               }
               if (soort == 'scripture') {
                 // maak versnummers (1-3 cijfers) superscript
-                tekst = tekst.replace(/(\d\d?\d?) /g,'<sup>$1</sup>&nbsp;');
+                tekst = tekst.replace(/(\d\d?\d?[ abc]?) /g,'<sup>$1&nbsp;</sup>');
               }
               tekst = tekst.replace(/\n/g, '<br />');
               tekst = tekst.replace(/\u{A0}/g, '&nbsp;');
