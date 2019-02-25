@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="files/opensong.css" />
   <script src="cordova.js"></script>  
   <script src="files/jquery-2.1.1.min.js"></script>
-  <script src="files/jquery.fullscreen.min.js"></script>
   <script src="files/opensong.min.js"></script>
   <script src="files/jquery.mobile-1.4.5.min.js"></script>
   <script src="files/i18next-1.7.3.min.js"></script>
@@ -57,7 +56,6 @@ console.log("DOM is ready");
                 $(".status-freeze").text($.t('state.freeze'));
                 $("#nav-close").text($.t('nav.close'));
                 $("#nav-info").text($.t('nav.info'));
-                $(".nav-refresh").text($.t('nav.refresh'));
                 $("#nav-admin").text($.t('nav.admin'));
                 $("#nav-control").text($.t('nav.control'));
                 $("#nav-alert").text($.t('nav.alert'));
@@ -76,6 +74,7 @@ console.log("DOM is ready");
                 $(".tabService").text($.t('nav.tabService'));
                 $(".tabSlide").text($.t('nav.tabSlide'));
                 $(".tabAlert").text($.t('nav.tabAlert'));
+                $(".tabRemote").text($.t('nav.remote'));
                 $(".tabSearchP").text($.t('nav.tabSearchP'));
                 $(".tabSearchL").text($.t('nav.tabSearchL'));
                 $("#service-previous").text($.t('state.left'));
@@ -122,7 +121,6 @@ console.log("DOM is ready");
   <div data-role="header" data-position="fixed" data-tap-toggle="true" class="header1" data-theme="a">
     <a href="#leftpanel1" class="ui-btn ui-corner-all ui-icon-bars ui-btn-icon-notext ui-btn-icon-left nav-home">&nbsp;</a>
     <h1 id="navHeadService">Service control</h1>
-    <a href="#" id="service-refresh" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-refresh nav-refresh">Vernieuwen</a>
     <div data-role="navbar">
       <ul>
         <li><a href="#service-manager" class="tabService" data-theme="e">-Liturgie</a></li>
@@ -165,7 +163,6 @@ console.log("DOM is ready");
   <div data-role="header" data-position="fixed" data-tap-toggle="true" id="header2" data-theme="a">
     <a href="#leftpanel1" class="ui-btn ui-corner-all ui-icon-bars ui-btn-icon-notext ui-btn-icon-left nav-home">&nbsp;</a>
     <h2 id="navHeadSlide">Slide control</h2>
-    <a href="#" id="controller-refresh" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-refresh nav-refresh">Vernieuwen</a>
     <div data-role="navbar">
       <ul>
         <li><a href="#service-manager" class="tabService" data-theme="b">Liturgie</a></li>
@@ -257,6 +254,7 @@ console.log("DOM is ready");
         <li><a href="#service-manager" class="tabService" data-theme="b">Liturgie</a></li>
         <li><a href="#slide-controller" class="tabSlide" data-theme="b">Dia's</a></li>
         <li><a href="#alert" class="tabAlert" data-theme="b">Waarschuwing</a></li>
+        <li><a href="#remote-screen" class="tabRemote" data-theme="b" >-Remote screen</a></li>
       </ul>
     </div>
   </div>
@@ -274,10 +272,6 @@ console.log("DOM is ready");
       <input type="password" name="set-pwd" id="set-pwd" value=""  data-clear-btn="true"/>
     </div>
     <a href="#" id="set-submit" class="ui-btn ui-corner-all" data-i18n="setup.connect">-Maak verbinding</a>
-    <div data-role="controlgroup" data-type="horizontal">
-      <a href="#" id="full-on" data-role="button" data-theme="c">Full screen on</a>
-      <a href="#" id="full-off" data-role="button" data-theme="b">Full screen off</a>
-    </div>
     <h3 class="ui-bar ui-bar-a" id="barState">Status</h3>
     <div class="ui-body">
     <div id="host-status"></div>
@@ -426,11 +420,11 @@ console.log("DOM is ready");
     <h3 class="ui-bar ui-bar-a" id="barSlide">Opensong remote</h3>
     <div class="ui-body">
       <p>OpenSong is a free, open-source software application created to manage lyrics, chords, lead sheets, overheads, computer projection, and more. More info on <a href="http://opensong.org" target="_blank">opensong.org</a></p>
-      <h3>version: 0.99.9 d</h3>
+      <h3>version: 1.0.0</h3>
       <h2>Requirements:</h2>
       <ul>
-        <li>Opensong must be running with Automation API enabled <br>(to enable, goto the generic settings, on the system tab)</li>
-        <li>Insert song requiries OpenSong 2.2.7 or newer</li>
+        <li>Opensong must be running with Automation API enabled (to enable, goto the generic settings, on the system tab)</li>
+        <li>Insert song requiries OpenSong 2.2.7 or newer (fails silently on older versions)</li>
         <li>All other functions require OpenSong 2 or newer</li>
       </ul>
     </div>

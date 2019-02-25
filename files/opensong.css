@@ -14,7 +14,10 @@
   white-space: normal;
   text-overflow: initial;
 }
-#remote-screen.ui-page-theme-a, .ui-overlay-a {
+#remote-screen {
+  height: 100vh;
+}
+#remote-screen.ui-page-theme-a {
   background-color: #000;
   text-shadow: .125em .125em .125em  rgba(0,0,0,0.7);
 }

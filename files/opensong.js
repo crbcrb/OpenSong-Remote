@@ -852,8 +852,6 @@ window.OpenSong = {
     // zet ook velden op andere schermen
     n = localStorage["OpenSongDisplay"];
     $("input:radio[name=display-]").filter("[value="+ n +"]").attr("checked","checked");
-    // als ik onderstaande refresh hier doe raakt ie van streek
-    //$("input:radio[name=display-]").checkboxradio('refresh');
     //console.groupEnd();
   },
   Herladen: function () {
@@ -1155,19 +1153,6 @@ window.OpenSong = {
         },3000);
     }
   },
-  fullScreenOn: function () {
-    //console.log('full screen on');
-    $("#full-on").removeClass("ui-btn-c").addClass("ui-btn-b")
-    $("#full-off").removeClass("ui-btn-b").addClass("ui-btn-c")
-    $('body').fullscreen();
-    
-  },
-  fullScreenOff: function () {
-    $("#full-on").removeClass("ui-btn-b").addClass("ui-btn-c")
-    $("#full-off").removeClass("ui-btn-c").addClass("ui-btn-b")
-    //console.log('full screen off');
-    $.fullscreen.exit();
-  },
   saveSettings: function() {
     //console.groupCollapsed('start saveSettings');
     localStorage["OpenSongHost"] = $("#set-host").val();
@@ -1199,7 +1184,6 @@ $(document).on("pagecontainerchange", function (event,ui) {
 });
 // Service Manager
 $(document).on("pageshow","#service-manager", OpenSong.showService);
-$(document).on("click","#service-refresh", OpenSong.Herladen);
 $(document).on("click","#service-next", OpenSong.nextItem);
 $(document).on("click","#service-previous", OpenSong.previousItem);
 // Slide Controller
@@ -1208,7 +1192,6 @@ $('#slide-controller').on( "swipeleft",OpenSong.previousSlide);
 $('#slide-controller').on( "swiperight",OpenSong.nextSlide);
 });
 $(document).on("pagebeforeshow", "#slide-controller", OpenSong.loadController);
-$(document).on("click","#controller-refresh", OpenSong.Herladen);
 $(document).on("click","#controller-next", OpenSong.nextSlide);
 $(document).on("click","#controller-previous", OpenSong.previousSlide);
 $(document).on("click","#controller2-next", OpenSong.nextSlide);
@@ -1227,8 +1210,6 @@ $(document).on("click", "#controller-show", OpenSong.showDisplay);
 // Instellingen
 $(document).on("pagebeforeshow", "#setup", OpenSong.showHost);
 $(document).on("click", "#set-submit", OpenSong.setHost);
-$(document).on("click", "#full-on", OpenSong.fullScreenOn);
-$(document).on("click", "#full-off", OpenSong.fullScreenOff);
 // Alerts
 $(document).on("click", "#alert-submit", OpenSong.showAlert);
 $(document).on("click", "#alert-cancel", OpenSong.cancelAlert);
