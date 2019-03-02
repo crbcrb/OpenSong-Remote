@@ -33,7 +33,11 @@ if (localStorage["OpenSongHost"] === null) {
 OpenSongHost = 'ws://' + localStorage["OpenSongHost"] + ':' + localStorage["OpenSongPort"] + '/ws';
 
 if (localStorage["OpenSongtekstSize"] === null) {
-  localStorage["OpenSongtekstSize"] = '30';
+  localStorage["OpenSongtekstSize"] = '7';
+} else {
+  if (localStorage["OpenSongtekstSize"] > 15) {
+    localStorage["OpenSongtekstSize"] = '7';
+  }
 }
 if (localStorage["OpenSongDiaregelaar"] === null) {
   localStorage["OpenSongDiaregelaar"] = 'a';
@@ -507,12 +511,17 @@ window.OpenSong = {
               }
               if (soort == 'scripture') {
                 // maak versnummers (1-3 cijfers) superscript
-                tekst = tekst.replace(/(\d\d?\d?[ abc]?) /g,'<sup>$1&nbsp;</sup>');
+                tekst = tekst.replace(/(\d\d?\d?[abc]?) /g,'<sup>$1&nbsp;</sup>');
               }
               tekst = tekst.replace(/\n/g, '<br />');
               tekst = tekst.replace(/\u{A0}/g, '&nbsp;');
               tekst = tekst.replace(/\u{AD}/g, '&shy;');
-              $("#current-screen-tekst").css('font-size',tsize + 'vmin').html(tekst);
+              if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
+                // als ik de font-size niet klein set, wordt de div overhoog gedrukt en komt er een vertical scrollbar
+                $("#current-screen-tekst").css('font-size','1px').html(tekst);
+              } else {
+                $("#current-screen-tekst").css('font-size',tsize + 'vmin').html(tekst);
+              }
             })
           } // ajax succes function
       })   // ajax
@@ -540,13 +549,9 @@ window.OpenSong = {
         xhrFields: {
           withCredentials: true
         },
-        succes: function (antwoord) {
+        succes: function (antwoord,status,xhr) {
+          //console.log(lastUrl + ' -> ' + status + ' ' + xhr.status);
           $("#host-status2").html('last Ajax response: ' + antwoord);
-        },
-        error : function (xhr,txtStatus,ErrorThrown) {
-          if (xhr.status != 0) {
-            //console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
-          }
         }
       })
     } else {
@@ -556,6 +561,7 @@ window.OpenSong = {
         crossDomain : true,
         dataType: soort,
         succes: function (antwoord) {
+          //console.log(lastUrl + ' -> ' + antwoord.response.status);
           $("#host-status2").html('last Ajax response: ' + antwoord);
         }
       });
@@ -1228,28 +1234,12 @@ $(document).on("panelopen", "#leftpanel1", OpenSong.saveSettings);
 // handle arrow keys
 
 $.ajaxSetup({
-  statusCode: {
-    401: function() {
-      $("#host-status2").html('401 - Unauthorized');
-    },
-    403: function() {
-      $("#host-status2").html('403 - Forbidden');
-    },
-    500: function() {
-      $("#host-status2").html('500 - Internal server error');
-    }
-  },
   error : function (xhr,txtStatus,ErrorThrown) {
     if (xhr.status != 0) {
-      console.log('Ajax error- ' + txtStatus + ' op url ' + lastUrl);
-    }
-    if (xhr.status == 404) {
-      $("#host-status2").html('<strong>Ajax: </strong> ' + txtStatus + " " + xhr.status
-          + " " + ErrorThrown + " (" + lastUrl + ")");
+      $("#host-status2").html('ajaxError: ' + lastUrl + ' <strong>' +ErrorThrown + '</strong>');
+      console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
     } else {
-      if (xhr.status != 0) {
-        $("#host-status2").html('<strong>Ajax: </strong> ' + txtStatus + " " + xhr.status + " " + ErrorThrown);
-      }
+      console.log('ajaxOK: ' + xhr.status + ' url: ' + lastUrl);
     }
   },
   cache: true,

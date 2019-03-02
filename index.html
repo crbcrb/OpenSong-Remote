@@ -16,9 +16,10 @@
   <link rel="stylesheet" href="files/jquery.mobile.icons.min.css" />
   <link rel="stylesheet" href="files/jquery.mobile.structure.min.css" />
   <link rel="stylesheet" href="files/opensong.css" />
-  <script src="cordova.js"></script>  
+  <script src="cordova.js"></script>
   <script src="files/jquery-2.1.1.min.js"></script>
-  <script src="files/opensong.min.js"></script>
+  <script src="files/opensong.js"></script>
+  <!-- jquery mobile werkt (nog) niet met jquery 3 -->
   <script src="files/jquery.mobile-1.4.5.min.js"></script>
   <script src="files/i18next-1.7.3.min.js"></script>
   
@@ -125,7 +126,7 @@ console.log("DOM is ready");
       <ul>
         <li><a href="#service-manager" class="tabService" data-theme="e">-Liturgie</a></li>
         <li><a href="#slide-controller" class="tabSlide" data-theme="b">-Dia's</a></li>
-        <li><a href="#alert" class="tabAlert" data-theme="b">-Waarschuwing</a></li>
+        <li><a href="#search" class="tabSearchL" data-theme="b">-Lied zoeken</a></li>
       </ul>
     </div>
   </div>
@@ -167,7 +168,7 @@ console.log("DOM is ready");
       <ul>
         <li><a href="#service-manager" class="tabService" data-theme="b">Liturgie</a></li>
         <li><a href="#slide-controller" class="tabSlide" data-theme="e">Dia's</a></li>
-        <li><a href="#alert" class="tabAlert" data-theme="b">Waarschuwing</a></li>
+        <li><a href="#search" class="tabSearchL" data-theme="b">-Lied zoeken</a></li>
       </ul>
     </div>
   </div>
@@ -209,7 +210,7 @@ console.log("DOM is ready");
       <ul>
         <li><a href="#service-manager" class="tabService" data-theme="b">Liturgie</a></li>
         <li><a href="#slide-controller" class="tabSlide" data-theme="b">Dia's</a></li>
-        <li><a href="#alert" class="tabAlert" data-theme="e">Waarschuwing</a></li>
+        <li><a href="#search" class="tabSearchL" data-theme="b">-Lied zoeken</a></li>
       </ul>
     </div>
   </div>
@@ -254,7 +255,6 @@ console.log("DOM is ready");
         <li><a href="#service-manager" class="tabService" data-theme="b">Liturgie</a></li>
         <li><a href="#slide-controller" class="tabSlide" data-theme="b">Dia's</a></li>
         <li><a href="#alert" class="tabAlert" data-theme="b">Waarschuwing</a></li>
-        <li><a href="#remote-screen" class="tabRemote" data-theme="b" >-Remote screen</a></li>
       </ul>
     </div>
   </div>
@@ -282,17 +282,17 @@ console.log("DOM is ready");
       <div class="ui-field-contain" data-type="horizontal">
         <fieldset data-role="controlgroup" data-type="horizontal">
 	<legend id="toon2">tonen als:</legend>
-        <input name="screensoort-" id="screensoort-c" value="c" type="radio" checked="checked">
+        <input name="screensoort-" id="screensoort-c" value="c" type="radio">
         <label for="screensoort-c" id="lblRemote3">Plaatje</label>
         <input name="screensoort-" id="screensoort-a" value="a" type="radio">
         <label for="screensoort-a" id="lblRemote2">Tekst z/w</label>
-        <input name="screensoort-" id="screensoort-b" value="b" type="radio">
+        <input name="screensoort-" id="screensoort-b" value="b" type="radio" checked="checked">
         <label for="screensoort-b" id="lblRemote1">Tekst w/z</label>
         </fieldset>
 	</div>
 	<div class="ui-field-contain" data-type="horizontal">
 	<label for="screen-size" id="lblSize">tekst grootte:</label>
-	<input type="range" name="screen-size" id="screen-size" value="5" min="1" max="20" data-highlight="true"/>
+	<input type="range" name="screen-size" id="screen-size" value="7" min="2" max="15" data-highlight="true"/>
       </div>
 
    </div>
@@ -322,8 +322,7 @@ console.log("DOM is ready");
       <ul>
         <li><a href="#service-manager" data-theme="b" class="tabService">Liturgie</a></li>
         <li><a href="#slide-controller" data-theme="b" class="tabSlide">Dia's</a></li>
-        <li><a href="#alert" data-theme="b" class="tabAlert">Waarschuwing</a></li>
-        <li><a href="#presentatie" data-theme="e" class="tabSearchP" >Zoek presentatie</a></li>
+        <li><a href="#search" class="tabSearchL" data-theme="b">-Lied zoeken</a></li>
       </ul>
     </div>
   </div>
@@ -366,8 +365,7 @@ console.log("DOM is ready");
       <ul>
         <li><a href="#service-manager" data-theme="b" class="tabService">Liturgie</a></li>
         <li><a href="#slide-controller" data-theme="b" class="tabSlide">Dia's</a></li>
-        <li><a href="#alert" data-theme="b" class="tabAlert">Waarschuwing</a></li>
-        <li><a href="#search" data-theme="e" class="tabSearchL">-Zoek</a></li>
+        <li><a href="#search" class="tabSearchL" data-theme="e">-Lied zoeken</a></li>
       </ul>
     </div>
   </div>
