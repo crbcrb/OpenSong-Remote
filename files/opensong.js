@@ -1,7 +1,7 @@
 /******************************************************************************
  * OpenSong - Open Source Lyrics Projection                                    *
  * --------------------------------------------------------------------------- *
- aangepast voor OpenSong, jan 2019 CRB                                     
+ aangepast voor OpenSong, mrt 2019 CRB                                     
  ontleend aan
  
  * OpenLP - Open Source Lyrics Projection    * Copyright (c) 2008-2013 Raoul Snyman                                        *
@@ -114,6 +114,7 @@ window.OpenSong = {
           //console.log('total slides: ' + totalSlides + '; nu ontvangen: ' + n);
           if (n != totalSlides) {
             // aantal is veranderd, nu bijwerken
+            //console.log('nu bijwerken');
             totalSlides = n;
             var s = 1;   // tel songs
             var ul = $("#service-manager > div[role=main] > ul");
@@ -289,7 +290,7 @@ window.OpenSong = {
                 tekst = tekst + i18n.t("setup.dia3") + ': ' + bestand.replace(/^.*[\\\/]/, '');
                 if ($('#regelaarsoort-a').is(":checked")) {
                   tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + slideId
-                    + '/preview/width:160" align="right">' + tekst;
+                    + '/image/width:160" align="right">' + tekst;
                 }
               }
               if (soort == 'external') {
@@ -313,12 +314,12 @@ window.OpenSong = {
               if ($('#regelaarsoort-b').is(":checked")) {
                 // voeg thumb toe
                 tekst = '<div style="float:right;"><img src="' + OpenSongHost + 'presentation/slide/' + slideId
-                    + '/preview/width:240/quality:85"></div>' + tekst;   
+                    + '/image/width:240/quality:85"></div>' + tekst;   
               }
               if ($('#regelaarsoort-c').is(":checked")) {
                 // toon alleen plaatje
                 tekst = '<span>&nbsp;</span><img src="' + OpenSongHost + 'presentation/slide/' + slideId
-                    + '/preview/width:360/quality:85">';   
+                    + '/image/width:360/quality:85">';   
               }
               // vul nu de li lijstitem met de opgehaalde gegevens
               $("#slide-controller div[role=main] ul li a").each(function () {
@@ -438,7 +439,6 @@ window.OpenSong = {
                 aVerzen = verzen.split(' ');
                 currentVers = $(xmlSong).find('response').find('slides').find('slide').attr('PresentationIndex');
                 // array index is zero based, index is 1 based
-                //console.log('dit vers: ' + aVerzen[currentVers-1]);
                 var i;
                 verzen = '';
                 for (i = 0; i < aVerzen.length; i++) {
@@ -470,19 +470,18 @@ window.OpenSong = {
             var soort = $(xmlSong).find('response').find('slide').attr('type');
             $(xmlSong).find('response').find('slide').find('slides').find('slide').each(function() {
               var tekst = $(this).find('body').text();
-              
               if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
                 $("#current-screen-titel").css('font-size',(tsize * 0.85) + 'vmin').html('');                
                 $('#remote-main').addClass('geenpad')
                 var ww = $(window).width();
                 var wh = $(window).height() -20;
                 tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + sn;   
-                if (wh < (ww * 3 / 4)) {
-                  tekst = tekst + '/preview/height:' + wh;   
+                if (wh < (ww * 16 / 9)) {
+                  tekst = tekst + '/image/height:' + wh;   
                 } else {
-                  tekst = tekst + '/preview/width:' + ww;   
+                  tekst = tekst + '/image/width:' + ww;   
                 }
-                  tekst = tekst + '/quality:85/" width="' + ww + '" height="' + wh + '">';   
+                  tekst = tekst + '/" width="' + ww + '">';   
                 //tekst = '<img src="' + OpenSongHost + 'presentation/slide/current/image/' + Math.random() + '">';   
               } else {
                 $('#remote-main').removeClass('geenpad')
@@ -513,9 +512,13 @@ window.OpenSong = {
                 // maak versnummers (1-3 cijfers) superscript
                 tekst = tekst.replace(/(\d\d?\d?[abc]?) /g,'<sup>$1&nbsp;</sup>');
               }
+              // replace nbsp+nl with space, maar dit lijkt niet te werken
+              tekst = tekst.replace(/\u{A0}\n/g, ' ');
               tekst = tekst.replace(/\n/g, '<br />');
               tekst = tekst.replace(/\u{A0}/g, '&nbsp;');
               tekst = tekst.replace(/\u{AD}/g, '&shy;');
+              tekst = tekst.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+              
               if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
                 // als ik de font-size niet klein set, wordt de div overhoog gedrukt en komt er een vertical scrollbar
                 $("#current-screen-tekst").css('font-size','1px').html(tekst);
@@ -609,7 +612,7 @@ window.OpenSong = {
         currentSectie = 0;
       }
       var currentMode = $(xml).find('response').find('presentation').find('screen').attr('mode');
-      // check nu off slidename van status klopt met slidename in de playlist
+      // check nu of slidename van status klopt met slidename in de playlist
       statusReden = $(Playlist).find('response').attr('reason');
       if (statusReden !== undefined) {
         //console.log('response reason ' + statusReden);
@@ -619,7 +622,8 @@ window.OpenSong = {
       if (invoegVersie < 2) {
         if ((lastSlide != -1) && (lastSlide == currentSlide) && (currentMode == lastMode)) {
           //console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
-          lastSlide = -1; lastSectie = -1;  // force reload        
+          //lastSlide = -1; lastSectie = -1;  // force reload        
+          //console.log('reloaden - doe maar niet ');
         } 
       }
       statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
@@ -677,8 +681,8 @@ window.OpenSong = {
     // knoppen altijd zetten
     $(".status-show").removeClass("ui-btn-c").addClass("ui-btn-b");
     $(".status-zwart, .status-freeze, .status-theme").removeClass("ui-btn-c ui-btn-e").addClass("ui-btn-b");
-    $('#controller-modeC').text(' ');
-    $('#controller-modeS').text(' ');
+    $('#controller-modeC').html('&nbsp;');
+    $('#controller-modeS').html('&nbsp;');
     // afhankelijk van status juiste knop aan zetten
     switch (currentMode) {
           case 'N' :
@@ -813,7 +817,9 @@ window.OpenSong = {
         $("#host-status").html(i18n.t("setup.net2"));
         sok.send('/ws/subscribe/presentation');
         //OpenSong.loadService();
-        $("body").pagecontainer( "change", "#slide-controller");
+        if ($("#setup").is(":visible")) {
+          $("body").pagecontainer( "change", "#slide-controller");
+        }
       };
       sok.onmessage = function (evt) { 
         OpenSong.updateStatus(evt.data);
@@ -821,12 +827,30 @@ window.OpenSong = {
       sok.onerror = function() { 
         // websocket is closed.
         $("#host-status").html('<strong>' +  i18n.t("setup.net3") + '</strong>');
-        $( "body" ).pagecontainer( "change", "#setup");
+        $("#host-status").html('<strong>' +  i18n.t("setup.net4") + '</strong>');
+        if ($("#remote-screen").is(":visible")) {
+          $("#current-screen-titel").text(i18n.t("setup.net4"));
+          $("#current-screen-tekst").text('');
+          setTimeout(function() {
+            OpenSong.setHost();
+          },60000);
+        } else {
+          $( "body" ).pagecontainer( "change", "#setup");
+        }
       };
       sok.onclose = function() { 
         // websocket is closed.
         $("#host-status").html('<strong>' +  i18n.t("setup.net4") + '</strong>');
-        $( "body" ).pagecontainer( "change", "#setup");
+        if ($("#remote-screen").is(":visible")) {
+          $("#current-screen-titel").text(i18n.t("setup.net4"));
+          $("#current-screen-tekst").text('');
+          setTimeout(function() {
+            OpenSong.setHost();
+          },60000);
+        } else {
+          $( "body" ).pagecontainer( "change", "#setup");
+        }
+
       };
     } else {
       // The browser doesn't support WebSocket
@@ -1237,9 +1261,9 @@ $.ajaxSetup({
   error : function (xhr,txtStatus,ErrorThrown) {
     if (xhr.status != 0) {
       $("#host-status2").html('ajaxError: ' + lastUrl + ' <strong>' +ErrorThrown + '</strong>');
-      console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
+      //console.log('ajaxError: ' +ErrorThrown + ' url: ' + lastUrl);
     } else {
-      console.log('ajaxOK: ' + xhr.status + ' url: ' + lastUrl);
+      //console.log('ajaxOK: ' + xhr.status + ' url: ' + lastUrl);
     }
   },
   cache: true,
