@@ -1,10 +1,6 @@
 # onderstaande NIET meenemen in de build
-packages/
-*
-!config.xml
-!cordova.js
-!index.html
+README.md
 .git/
-packages/
-#files/opensong.js
-#files/*.map
+/packages/
+/files/opensong.js
+/files/*.map
