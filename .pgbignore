@@ -6,5 +6,5 @@ packages/
 !index.html
 .git/
 packages/
-files/opensong.js
-files/*.map
+#files/opensong.js
+#files/*.map
