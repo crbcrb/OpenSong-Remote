@@ -1,3 +1,4 @@
+# onderstaande NIET meenemen in de build
 packages/
 *
 !config.xml
@@ -5,15 +6,5 @@ packages/
 !index.html
 .git/
 packages/
-files/
-!files/images/
-!files/opensong.min.js
-!files/opensong.css
-!files/jqm-opensong.min.css
-!files/jquery.mobile.icons.min.css
-!iles/jquery.mobile.structure.min.css
-!files/opensong.css
-!files/jquery-2.1.1.min.js
-!files/opensong.min.js
-!files/jquery.mobile-1.4.5.min.js
-!files/i18next-1.7.3.min.js
+files/opensong.js
+files/*.map
