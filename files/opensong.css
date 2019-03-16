@@ -10,16 +10,19 @@
 .ui-li .ui-li-desc .ui-btn .ui-btn-text a.ui-link-inherit{
   white-space: normal;
 }
+.ui-overlay-a {
+  background-color: #ffffff;
+}
+#remote-screen.ui-page-theme-a {
+  background-color: #000;
+}
 .ui-listview > li > a.ui-btn {
   white-space: normal;
   text-overflow: initial;
 }
 #remote-screen {
   height: 100vh;
-}
-#remote-screen.ui-page-theme-a {
-  background-color: #000;
-  text-shadow: .125em .125em .125em  rgba(0,0,0,0.7);
+  overflow: hidden;
 }
 .screen-tekst {
   font-family: calibri, sans-serif;

@@ -33,10 +33,10 @@ if (localStorage["OpenSongHost"] === null) {
 OpenSongHost = 'ws://' + localStorage["OpenSongHost"] + ':' + localStorage["OpenSongPort"] + '/ws';
 
 if (localStorage["OpenSongtekstSize"] === null) {
-  localStorage["OpenSongtekstSize"] = '7';
+  localStorage["OpenSongtekstSize"] = '15';
 } else {
-  if (localStorage["OpenSongtekstSize"] > 15) {
-    localStorage["OpenSongtekstSize"] = '7';
+  if (localStorage["OpenSongtekstSize"] > 30) {
+    localStorage["OpenSongtekstSize"] = '15';
   }
 }
 if (localStorage["OpenSongDiaregelaar"] === null) {
@@ -300,7 +300,10 @@ window.OpenSong = {
                 var desc = $(this).find('description').text();
                 tekst = tekst + '(' + app + ') ' + desc + ' - ' + bestand;
               }
+              tekst = tekst.replace(/^\t/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
+              tekst = tekst.replace(/-\n/gm, '&shy;');
               tekst = tekst.replace(/\n/g, '<br>');
+              tekst = tekst.replace(/[ \u00A0]<br>/g, ' ');
               if (soort == 'song') {
                 if ($(this).attr('id')) {
                   var vers = $(this).attr('id');
@@ -470,9 +473,10 @@ window.OpenSong = {
             var soort = $(xmlSong).find('response').find('slide').attr('type');
             $(xmlSong).find('response').find('slide').find('slides').find('slide').each(function() {
               var tekst = $(this).find('body').text();
+              //console.log('origigineel: ' + tekst);
               if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
                 $("#current-screen-titel").css('font-size',(tsize * 0.85) + 'vmin').html('');                
-                $('#remote-main').addClass('geenpad')
+                $('#remote-main').addClass('geenpad');
                 var ww = $(window).width();
                 var wh = $(window).height() -20;
                 tekst = '<img src="' + OpenSongHost + 'presentation/slide/' + sn;   
@@ -481,13 +485,11 @@ window.OpenSong = {
                 } else {
                   tekst = tekst + '/image/width:' + ww;   
                 }
-                  tekst = tekst + '/" width="' + ww + '">';   
-                //tekst = '<img src="' + OpenSongHost + 'presentation/slide/current/image/' + Math.random() + '">';   
+                tekst = tekst + '/Math.random() ">';   
               } else {
-                $('#remote-main').removeClass('geenpad')
+                $('#remote-main').removeClass('geenpad');
                 $("#current-screen-titel").css('font-size',(tsize * 0.85) + 'vmin').html(titel);                
               }
-              
               if (soort == 'external') {
                 var app = $(xmlSong).find('response').find('slide').attr('application');
                 var bestand = $(xmlSong).find('response').find('slide').attr('filename');
@@ -495,7 +497,6 @@ window.OpenSong = {
                 var desc = $(this).find('description').text();
                 tekst = tekst + '(' + app + ') ' + desc + ' - ' + bestand;
               }
-              
               if (soort == 'song') {
                 if ($(xmlSong).attr('id')) {
                   var vers = $(xmlSong).attr('id');
@@ -512,12 +513,12 @@ window.OpenSong = {
                 // maak versnummers (1-3 cijfers) superscript
                 tekst = tekst.replace(/(\d\d?\d?[abc]?) /g,'<sup>$1&nbsp;</sup>');
               }
-              // replace nbsp+nl with space, maar dit lijkt niet te werken
-              tekst = tekst.replace(/\u{A0}\n/g, ' ');
-              tekst = tekst.replace(/\n/g, '<br />');
-              tekst = tekst.replace(/\u{A0}/g, '&nbsp;');
-              tekst = tekst.replace(/\u{AD}/g, '&shy;');
-              tekst = tekst.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+              // de volgorde van de replaces is belangrijk
+              tekst = tekst.replace(/^\t/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
+              tekst = tekst.replace(/-\n/gm, '&shy;');
+              tekst = tekst.replace(/\n/g, '<br>');
+              tekst = tekst.replace(/[ \u00A0]<br>/g, ' ');
+              //console.log('transform 6: ' + tekst);
               
               if ((soort == 'image') || ($('#screensoort-c').is(":checked"))) {
                 // als ik de font-size niet klein set, wordt de div overhoog gedrukt en komt er een vertical scrollbar
@@ -618,13 +619,6 @@ window.OpenSong = {
         //console.log('response reason ' + statusReden);
         invoegVersie = 2
         lastSlide = -1; lastSectie = -1;  // force reload        
-      }
-      if (invoegVersie < 2) {
-        if ((lastSlide != -1) && (lastSlide == currentSlide) && (currentMode == lastMode)) {
-          //console.log('reloaden? - currentSlide: ' + currentSlide + '; lastSlide: ' + lastSlide);
-          //lastSlide = -1; lastSectie = -1;  // force reload        
-          //console.log('reloaden - doe maar niet ');
-        } 
       }
       statusNaam = $(xml).find('response').find('presentation').find('slide').find('name').text();
       playItemName = $(Playlist).find('response').find('slide[identifier="' + currentSlide + '"]').attr('name');
@@ -850,7 +844,6 @@ window.OpenSong = {
         } else {
           $( "body" ).pagecontainer( "change", "#setup");
         }
-
       };
     } else {
       // The browser doesn't support WebSocket
@@ -1146,12 +1139,10 @@ window.OpenSong = {
     $("#popupSong").popup("close");
     if (invoegVersie == 1) {
       /* opensong geeft geen status update (bug!) na remote song insert
-       * daarom schoppen we er nog een alert cancel achteraan */
-      setTimeout(function() {
-        OpenSong.doeAktie("text","presentation/screen/alert/");
-      },100);
+       * daarom forceren we een reload */
+      lastSlide = -1; lastSectie = -1; totalSlides = -1;
+      OpenSong.getStatus();
     }
-    //currentSlide = -1; // force reload
       setTimeout(function() {
           $('body').pagecontainer( "change", "#service-manager");
       },1000);
