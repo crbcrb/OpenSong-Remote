@@ -485,7 +485,7 @@ window.OpenSong = {
                 } else {
                   tekst = tekst + '/image/width:' + ww;   
                 }
-                tekst = tekst + '/Math.random() ">';   
+                tekst = tekst + '/Math.random()" width="' + ww + 'px">';   
               } else {
                 $('#remote-main').removeClass('geenpad');
                 $("#current-screen-titel").css('font-size',(tsize * 0.85) + 'vmin').html(titel);                
