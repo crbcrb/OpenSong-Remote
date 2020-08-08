@@ -1,10 +1,9 @@
 /******************************************************************************
  * OpenSong - Open Source Lyrics Projection                                    *
  * --------------------------------------------------------------------------- *
- aangepast voor OpenSong, mrt 2019 CRB                                     
+ aangepast voor OpenSong, aug 2020 CRB
  ontleend aan
- 
- * OpenLP - Open Source Lyrics Projection    * Copyright (c) 2008-2013 Raoul Snyman                                        *
+  * OpenLP - Open Source Lyrics Projection    * Copyright (c) 2008-2013 Raoul Snyman                                        *
 
  ******************************************************************************/
 
@@ -24,6 +23,8 @@ var loadControllerBusy;
 var updateStatusBusy;
 var lastUrl;
 var invoegVersie = 1;   // 2 = support songinsert with comma ; 1 = support songinsert with spaces
+var ajaxBusy = 0;
+var loadDelay = 500;   // msec delay voor laden volgende slide
 
 if (localStorage["OpenSongHost"] === null) {
   localStorage["OpenSongHost"] = '127.0.0.1';
@@ -85,7 +86,7 @@ window.OpenSong = {
        return;
     }
     loadServiceBusy = true;
-    //console.log('GET "presentation/slide/list"');
+    console.log('GET "presentation/slide/list"');
     $.ajax({
       type: "GET",
       url: OpenSongHost + "presentation/slide/list",
@@ -125,7 +126,7 @@ window.OpenSong = {
             $(xmlPlaylist).find('response').children().each(function(){
               if ($(this).attr('identifier')) {
                 // dit slaat slides zonder identifier over (meestal stylesheets)
-                var n = $(this).attr('identifier');  // 
+                var n = $(this).attr('identifier');  //
                 var name = $(this).attr('name');
                 var soort = $(this).attr('type');
                 if ((name != vorige) || (soort != vorigesoort)) {
@@ -204,52 +205,13 @@ window.OpenSong = {
     }
     //console.groupEnd();
   },
-  loadController: function () {
-    //console.groupCollapsed('start loadController');
-    //console.trace();
-    var n = $("#slides li").length;
-    //console.log('aantal items: ',n);
-    if ((currentSectie == lastSectie) && (lastSectie != -1) && (n>1)){
-      //console.log('exit want nog in zelfde sectie')
-      //console.groupEnd();
-      return;
-    }
-    if (loadControllerBusy == true) {
-      //console.log('exit want loadController is bezig')
-      //console.groupEnd();
-      return;
-    }
-    lastSectie = currentSectie;
-    var lastpresentid = '';
-    var sn = currentSlide;
-    var ajaxBusy = 0;
-    var ul = $("#slides");
-    ul.html("");
-    soort  = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('type');
-    if (soort == 'blank') {
-      $("#controller-titel").text("(slide: " + sn + "; item: " + currentSectie + ")");
-      var li = $("<li data-icon=\"false\">").append(
-        $("<a href=\"#\">").attr("slide",sn).html(''));
-      li.children("a").click(OpenSong.setSlide);
-      ul.append(li);
-      sn++;
-    } else {
-      loadControllerBusy = true;
-      var i = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('sectie');
-      // lees nu alle slides in die in deze sectie horen
-      $(Playlist).find('response').find('slide').each( function() {
-      if ($(this).attr("sectie") == i) {
-        // maak een lege li lijst
-        var s = $(this).attr('identifier');
-        vers = "0";
-        tekst = i18n.t("setup.dia4");
-        var li = $('<li data-icon="false" id="slides">').append(
-                $("<a href=\"#\">").attr("slide", parseInt(s, 10)).attr('vers',vers).html(tekst));
-        li.children("a").click(OpenSong.setSlide);
-        ul.append(li);
-        lastUrl = "presentation/slide/" + s;
-        ajaxBusy++;
-        //console.log('ajax call %d afgevuurd',ajaxBusy);
+  delayControllerSlide: function(deze) {
+    setTimeout(function() {
+      OpenSong.getControllerSlide(deze);
+    },(ajaxBusy -1) * loadDelay);
+  },
+  getControllerSlide: function (s) {
+        //console.log('ajax call %d afgevuurd',s);
         $.ajax({
           type: "GET",
           url: OpenSongHost + "presentation/slide/" + s,
@@ -317,12 +279,12 @@ window.OpenSong = {
               if ($('#regelaarsoort-b').is(":checked")) {
                 // voeg thumb toe
                 tekst = '<div style="float:right;"><img src="' + OpenSongHost + 'presentation/slide/' + slideId
-                    + '/image/width:240/quality:85"></div>' + tekst;   
+                    + '/image/width:240/quality:85"></div>' + tekst;
               }
               if ($('#regelaarsoort-c').is(":checked")) {
                 // toon alleen plaatje
                 tekst = '<span>&nbsp;</span><img src="' + OpenSongHost + 'presentation/slide/' + slideId
-                    + '/image/width:360/quality:85">';   
+                    + '/image/width:360/quality:85">';
               }
               // vul nu de li lijstitem met de opgehaalde gegevens
               $("#slide-controller div[role=main] ul li a").each(function () {
@@ -335,6 +297,7 @@ window.OpenSong = {
             })
             // ajax call is klaar, maar we kunnen pas showController doen
             //      als alle ajax calls klaar zijn
+            //console.log('ajax call %d is klaar',s);
             ajaxBusy--;
             if (ajaxBusy <= 0) {
               //console.log('alle ajax calls zijn klaar, doe nu showController');
@@ -344,8 +307,56 @@ window.OpenSong = {
             }
           } // ajax succes function
         })   // ajax
-              s++;
-              sn = s;
+  },
+  loadController: function () {
+    //console.groupCollapsed('start loadController');
+    //console.trace();
+    var n = $("#slides li").length;
+    //console.log('aantal items: ',n);
+    if ((currentSectie == lastSectie) && (lastSectie != -1) && (n>1)){
+      //console.log('exit want nog in zelfde sectie')
+      //console.groupEnd();
+      return;
+    }
+    if (loadControllerBusy == true) {
+      //console.log('exit want loadController is bezig')
+      //console.groupEnd();
+      return;
+    }
+    lastSectie = currentSectie;
+    var lastpresentid = '';
+    var sn = currentSlide;
+    ajaxBusy = 0;
+    var ul = $("#slides");
+    ul.html("");
+    soort  = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('type');
+    if (soort == 'blank') {
+      $("#controller-titel").text("(slide: " + sn + "; item: " + currentSectie + ")");
+      var li = $("<li data-icon=\"false\">").append(
+        $("<a href=\"#\">").attr("slide",sn).html(''));
+      li.children("a").click(OpenSong.setSlide);
+      ul.append(li);
+      sn++;
+    } else {
+      loadControllerBusy = true;
+      var i = $(Playlist).find('response').find('slide[identifier="' + sn + '"]').attr('sectie');
+      // lees nu alle slides in die in deze sectie horen
+      $(Playlist).find('response').find('slide').each( function() {
+      if ($(this).attr("sectie") == i) {
+        // maak een lege li lijst
+        var s = $(this).attr('identifier');
+        vers = "0";
+        tekst = i18n.t("setup.dia4");
+        var li = $('<li data-icon="false" id="slides">').append(
+                $("<a href=\"#\">").attr("slide", parseInt(s, 10)).attr('vers',vers).html(tekst));
+        li.children("a").click(OpenSong.setSlide);
+        ul.append(li);
+        lastUrl = "presentation/slide/" + s;
+        ajaxBusy++;
+        console.log('ajax call %d gequeued',sn);
+        OpenSong.delayControllerSlide(s);
+        s++;
+        sn = s;
       } // deze sectie
     }); //each function
     } // if soort is blank

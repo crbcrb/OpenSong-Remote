@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
-<widget xmlns = "http://www.w3.org/ns/widgets"
-        xmlns:gap = "http://phonegap.com/ns/1.0"
-        id = "info.dehoeksteen.opensongremote"
-        version = "1.0.2">
+<widget id = "info.dehoeksteen.opensongremote"
+        version = "1.0.4"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:gap="http://phonegap.com/ns/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
 
     <name>OpenSongRemote</name>
 
@@ -15,7 +17,7 @@
     <author href="http://home.solcon.nl/c.r.berensen" email="roland@solcon.nl">
         CRB
     </author>
-    <preference name='phonegap-version' value='cli-8.1.1' />
+    <preference name='phonegap-version' value='cli-9.0.0' />
 
     <feature name="http://api.phonegap.com/1.0/device" />
 
@@ -40,13 +42,16 @@ permission on your app, which PhoneGap requires.
     <plugin name="cordova-plugin-splashscreen" source="npm" />
     <plugin name="cordova-plugin-whitelist" source="npm" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="SplashScreenDelay" value="2000" />
     <preference name="show-splash-screen-spinner" value="true" /> <!-- ios: if set to false, the spinner won't appear on the splash screen during app loading -->
     <preference name="auto-hide-splash-screen" value="true" /> <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
     
 
     <!-- Define app icon for each platform. -->
     <platform name="android">
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
        <preference name="android-minSdkVersion" value="19" /> <!-- android: MIN SDK version supported on the target device. MAX version is blank by default. -->
        <preference name="android-targetSdkVersion" value="28" />
        <preference name="android-installLocation" value="auto" /> <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
@@ -78,5 +83,5 @@ Define access to external domains.
     <access origin="*" /> <!-- allow all pages -->
     <allow-intent href="*" />
     <allow-navigation href="*" />
-
+    
 </widget>
